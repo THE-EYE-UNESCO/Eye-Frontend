@@ -1,0 +1,24 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "main",
+    "origin",
+    "the_eye_updated",
+    "the_eye_updated_v2",
+    "the_eye_web"
+  ],
+  "parent": {
+    "main": null,
+    "origin": "main",
+    "the_eye_updated": "main",
+    "the_eye_updated_v2": "main",
+    "the_eye_web": "main"
+  },
+  "order": [
+    "main",
+    "origin",
+    "the_eye_updated",
+    "the_eye_updated_v2",
+    "the_eye_web"
+  ]
+}
