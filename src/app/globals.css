@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+@theme {
+  --color-night: #020617;
+  --color-tealGlow: #1de9e6;
+  --color-cyanGlow: #5ef0ff;
+  --color-ocean: #020b1a;
+  --color-slateSoft: #9ca3af;
+
+  --font-family-poppins: var(--font-poppins), "Poppins", system-ui, sans-serif;
+
+  --shadow-glow: 0 0 30px rgba(29, 233, 230, 0.7);
+  --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.5);
+}
+
+body {
+  @apply min-h-screen bg-night text-white antialiased;
+  font-family: var(--font-poppins, "Poppins"), "Poppins", system-ui, sans-serif;
+  background-image: radial-gradient(circle at 20% 20%, rgba(55, 248, 194, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(94, 240, 255, 0.08), transparent 50%),
+    linear-gradient(160deg, #020610 0%, #041024 40%, #050b18 100%);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 1.65rem;
+  }
+}
+
+p {
+  @apply text-xl leading-relaxed;
+}
+
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl;
+}
+
+.section-grid {
+  @apply grid gap-6 lg:grid-cols-2;
+}
+
+.numbered-pill {
+  @apply text-xs font-semibold tracking-[0.3em] uppercase text-slateSoft;
+}
+
+.tag-chip {
+  @apply px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs uppercase tracking-wide text-slateSoft;
+}
+
+.gradient-border {
+  position: relative;
+  padding: 2px;
+  border-radius: 1.5rem;
+  animation: borderGlow 8s linear infinite;
+}
+
+.gradient-border .border-inner {
+  border-radius: inherit;
+  
+}
+
+@keyframes borderGlow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
