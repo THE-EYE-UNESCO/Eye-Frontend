@@ -10,7 +10,7 @@ const heroArticle = {
   body:
     "Fire crews working around the clock have successfully established firebreaks. Evacuation orders remain in effect for zone MN-65.",
   badge: "WILDFIRE ALERT",
-  image: "/sample-crisis-hero.jpg",
+  image: "/sample-crisis.png",
 };
 
 const breakingNews = [
@@ -22,7 +22,7 @@ const breakingNews = [
       "IoT sensors detected unusual ground movement. Satellite imagery confirms terrain shift in residential areas.",
     location: "Hill District",
     time: "12 min ago",
-    image: "/sample-crisis-hero.jpg",
+    image: "/sample-crisis.png",
   },
   {
     id: "b2",
@@ -32,7 +32,7 @@ const breakingNews = [
       "Heavy rainfall detected upstream. Water levels rising rapidly. Predicted to affect low‑lying areas.",
     location: "River Valley",
     time: "36 min ago",
-    image: "/sample-crisis.jpg",
+    image: "/sample-crisis-ex.png",
   },
   {
     id: "b3",
@@ -42,7 +42,7 @@ const breakingNews = [
       "Fire detected by thermal imaging. Wind conditions causing rapid spread towards residential zones.",
     location: "Forest Park",
     time: "58 min ago",
-    image: "/sample-crisis-hero.jpg",
+    image: "/sample-crisis.png",
   },
 ];
 

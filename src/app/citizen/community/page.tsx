@@ -39,7 +39,7 @@ const posts = [
     title: "Our Shelter Experience – A Story of Hope",
     body:
       "When the flood warning came, we were scared. But the emergency response team was incredible. They evacuated us safely and the shelter had everything we needed — food, medical care, and most importantly, human kindness. Thank you to all the volunteers! 🙏",
-    image: "/sample-crisis-hero.jpg",
+    image: "/community1.png",
     likes: 324,
     comments: 28,
     shares: 45,
@@ -52,7 +52,7 @@ const posts = [
     title: "Neighbors Helping Neighbors",
     body:
       "Yesterday, I witnessed something beautiful. When Ms. Rodriguez couldn’t evacuate on her own, three neighbors immediately stepped up to help. This is what community means. We look out for each other. ❤️",
-    image: "/sample-crisis.jpg",
+    image: "/police.png",
     likes: 324,
     comments: 28,
     shares: 45,
