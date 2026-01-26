@@ -4,6 +4,8 @@
   color-scheme: dark;
 }
 
+
+
 @theme {
   --color-night: #020617;
   --color-tealGlow: #1de9e6;
@@ -32,20 +34,20 @@ body {
       transparent 50%
     ),
     linear-gradient(160deg, #020610 0%, #041024 40%, #050b18 100%);
-  font-size: clamp(0.95rem, 2vw, 1.25rem);
+  font-size: clamp(0.875rem, 1vw, 1rem);
   line-height: 1.6;
 }
 
 .citizen-main {
-  font-size: clamp(0.97rem, 2vw, 1.15rem);
+  font-size: clamp(0.875rem, 1vw, 0.95rem);
 }
 
 .citizen-sidebar {
-  font-size: clamp(0.9rem, 1.7vw, 1.08rem);
+  font-size: clamp(0.8rem, 0.9vw, 0.9rem);
 }
 
 .sidebar-upgrade {
-  font-size: clamp(0.9rem, 1.7vw, 1.08rem);
+  font-size: clamp(0.8rem, 0.9vw, 0.9rem);
 }
 
 .sidebar-profile .profile-email {
@@ -53,20 +55,26 @@ body {
 }
 
 h1, h2, h3 {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
   font-weight: 700;
-  line-height: 1.18;
+  line-height: 1.2;
+}
+
+h4, h5, h6 {
+  font-size: clamp(0.875rem, 1vw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 p, .subheading {
-  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-size: clamp(0.875rem, 1vw, 1rem);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 @media (min-width: 1024px) {
   body {
-    font-size: 1.65rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -76,7 +84,7 @@ p, .subheading {
 
 @media (min-width: 1024px) {
   .citizen-main {
-    font-size: 1.65rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -93,7 +101,7 @@ p, .subheading {
 }
 
 .tag-chip {
-  @apply px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs uppercase tracking-wide text-slateSoft;
+  @apply px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-wide text-slateSoft;
 }
 
 .gradient-border {

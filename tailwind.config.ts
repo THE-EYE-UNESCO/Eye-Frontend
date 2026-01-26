@@ -8,6 +8,21 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        xs: "0.7rem", // 11px
+        sm: "0.8rem", // 12.8px
+        base: "0.9rem", // 14.4px
+        lg: "1rem", // 16px
+        xl: "1.15rem", // 18.4px
+        "2xl": "1.35rem", // 21.6px
+        "3xl": "1.6rem", // 25.6px
+        "4xl": "1.85rem", // 29.6px
+        "5xl": "2.1rem", // 33.6px
+        "6xl": "2.4rem", // 38.4px
+        "7xl": "2.6rem", // 41.6px
+        "8xl": "2.8rem", // 44.8px
+        "9xl": "3rem", // 48px
+      },
       colors: {
         night: "#020617",
         tealGlow: "#1de9e6",

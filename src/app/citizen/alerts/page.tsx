@@ -128,31 +128,32 @@ export default function AlertsPage() {
         </div>
 
         {/* Filters */}
-        <div className="rounded-3xl bg-white p-4 shadow-md">
-          <p className="text-[11px] font-semibold text-slate-500">Filter by Severity</p>
+        <div className="glass-panel p-4 shadow-card">
+          <p className="text-[11px] font-semibold text-slateSoft">Filter by Severity</p>
           <div className="mt-3 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-              <span className="text-slate-400">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
+              <span className="text-slateSoft">
                 {severityFilter === "All" ? "All Severities..." : severityFilter}
               </span>
               <select
-                className="bg-transparent text-sm text-slate-600 focus:outline-none"
+                className="bg-transparent text-sm text-white focus:outline-none"
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value as Severity | "All")}
               >
-                <option value="All">All</option>
-                <option value="Critical">Critical</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
+                <option value="All" className="text-night">All</option>
+                <option value="Critical" className="text-night">Critical</option>
+                <option value="High" className="text-night">High</option>
+                <option value="Medium" className="text-night">Medium</option>
+                <option value="Low" className="text-night">Low</option>
               </select>
             </div>
 
-            <label className="flex items-center gap-2 justify-end text-xs text-slate-500">
+            <label className="flex items-center gap-2 justify-end text-xs text-slateSoft">
               <input
                 type="checkbox"
                 checked={showAcknowledged}
                 onChange={(e) => setShowAcknowledged(e.target.checked)}
+                className="accent-tealGlow"
               />
               Show Acknowledged
             </label>
@@ -161,17 +162,17 @@ export default function AlertsPage() {
 
         {/* Active Alerts */}
         <section className="space-y-3">
-          <p className="text-xs font-semibold text-slate-700">Active Alerts</p>
+          <p className="text-xs font-semibold text-white">Active Alerts</p>
 
           {activeAlerts.length === 0 ? (
-            <div className="rounded-3xl bg-white p-6 text-sm text-slate-500 shadow-sm">
+            <div className="glass-panel p-6 text-sm text-slateSoft shadow-sm">
               No active alerts.
             </div>
           ) : (
             activeAlerts.map((a) => (
               <div
                 key={a.id}
-                className="rounded-3xl bg-white shadow-sm border-l-4 border-red-500 p-5"
+                className="glass-panel shadow-card border-l-4 border-l-red-500 p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
@@ -180,10 +181,10 @@ export default function AlertsPage() {
                         {a.severity.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-slate-900">{a.title}</p>
+                    <p className="text-sm font-semibold text-white">{a.title}</p>
 
-                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-500">
-                      <span className="text-slate-400">Delivery:</span>
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-slateSoft">
+                      <span className="text-slateSoft">Delivery:</span>
                       {a.delivery.map((d) => (
                         <span
                           key={d}
@@ -200,14 +201,14 @@ export default function AlertsPage() {
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
                     onClick={() => acknowledge(a.id)}
-                    className="rounded-xl bg-[#0b1020] px-4 py-2 text-[11px] font-semibold text-white"
+                    className="rounded-xl bg-tealGlow px-4 py-2 text-[11px] font-semibold text-night shadow-glow hover:shadow-lg transition"
                   >
                     Acknowledge Alert
                   </button>
-                  <button className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-[11px] font-semibold text-slate-700">
+                  <button className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold text-white hover:bg-white/10 transition">
                     View Details
                   </button>
-                  <button className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-[11px] font-semibold text-slate-700 inline-flex items-center gap-2">
+                  <button className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold text-white hover:bg-white/10 transition inline-flex items-center gap-2">
                     <Share2 className="h-3.5 w-3.5" />
                     Share
                   </button>
@@ -219,17 +220,17 @@ export default function AlertsPage() {
 
         {/* Acknowledged Alerts */}
         <section className="space-y-3">
-          <p className="text-xs font-semibold text-slate-700">Acknowledged Alerts</p>
+          <p className="text-xs font-semibold text-white">Acknowledged Alerts</p>
 
           {ackAlerts.length === 0 ? (
-            <div className="rounded-3xl bg-white p-6 text-sm text-slate-500 shadow-sm">
+            <div className="glass-panel p-6 text-sm text-slateSoft shadow-sm">
               No acknowledged alerts.
             </div>
           ) : (
             ackAlerts.map((a) => (
               <div
                 key={a.id}
-                className="rounded-3xl bg-white shadow-sm border-l-4 border-green-600 p-5"
+                className="glass-panel shadow-card border-l-4 border-green-600 p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
@@ -238,13 +239,13 @@ export default function AlertsPage() {
                         {a.severity.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-700">{a.message}</p>
-                    <p className="inline-flex items-center gap-1 text-[11px] text-green-700">
+                    <p className="text-xs text-white">{a.message}</p>
+                    <p className="inline-flex items-center gap-1 text-[11px] text-green-400">
                       <CheckCircle2 className="h-4 w-4" />
                       Acknowledged
                     </p>
                   </div>
-                  <p className="text-[10px] text-slate-400">{a.createdAgo}</p>
+                  <p className="text-[10px] text-slateSoft">{a.createdAgo}</p>
                 </div>
               </div>
             ))

@@ -14,7 +14,7 @@ export default function ReportDetailsPage() {
     >
       <div className="space-y-6">
         {/* Stepper with Details active */}
-        <div className="rounded-3xl bg-white p-6 shadow-md">
+        <div className="glass-panel p-6 shadow-card">
           <div className="grid grid-cols-4 items-center gap-6">
             <StepItem label="Type & Severity" completed />
             <StepItem label="Details" active />
@@ -24,29 +24,29 @@ export default function ReportDetailsPage() {
         </div>
 
         {/* Main card */}
-        <div className="rounded-3xl bg-white p-6 shadow-md space-y-6">
+        <div className="glass-panel p-6 shadow-card space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Tell us what's happening</h2>
+            <h2 className="text-lg font-semibold text-white">Tell us what&apos;s happening</h2>
           </div>
 
-          <div className="space-y-4 text-xs text-slate-700">
+          <div className="space-y-4 text-xs text-slateSoft">
             <div className="space-y-2">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-[11px] font-semibold text-slateSoft">
                 Brief Title *
               </label>
               <input
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
                 placeholder="e.g Road blocked by fallen tree near Main Street..."
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-[11px] font-semibold text-slateSoft">
                 Detailed Description *
               </label>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                 <textarea
-                  className="h-28 w-full resize-none bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                  className="h-28 w-full resize-none bg-transparent text-xs text-white placeholder:text-slateSoft focus:outline-none"
                   placeholder={`Describe what you're observing. Include details like:
 - What exactly is happening?
 - When did it start?
@@ -57,11 +57,11 @@ export default function ReportDetailsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-[11px] font-semibold text-slateSoft">
                 Number of people affected (if known)
               </label>
               <input
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
                 placeholder="Approximate number"
               />
             </div>
@@ -70,14 +70,14 @@ export default function ReportDetailsPage() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-between">
             <button
               type="button"
-              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 sm:w-40"
+              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slateSoft sm:w-40 hover:bg-white/10 transition"
               onClick={() => router.back()}
             >
               Back
             </button>
             <button
               type="button"
-              className="w-full rounded-2xl bg-[#0b1020] px-4 py-3 text-sm font-semibold text-white sm:w-40"
+              className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow hover:bg-tealGlow/90 transition sm:w-40"
               onClick={() => router.push("/citizen/report/location")}
             >
               Continue
@@ -103,7 +103,7 @@ function StepItem({
     <div className="flex items-center gap-3">
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-500"
+          primary ? "bg-tealGlow text-night shadow-glow" : "bg-white/10 text-slateSoft"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
@@ -111,14 +111,14 @@ function StepItem({
       <div className="min-w-0">
         <p
           className={`text-xs font-semibold ${
-            active ? "text-blue-600" : completed ? "text-slate-800" : "text-slate-500"
+            active ? "text-tealGlow" : completed ? "text-white" : "text-slateSoft"
           }`}
         >
           {label}
         </p>
         <div
           className={`mt-2 h-[2px] w-full rounded-full ${
-            completed ? "bg-blue-500" : "bg-slate-200"
+            completed ? "bg-tealGlow" : "bg-white/10"
           }`}
         />
       </div>

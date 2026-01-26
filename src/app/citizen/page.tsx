@@ -87,10 +87,10 @@ export default function CitizenDashboard() {
           Welcome To <span className="font-bold">The Eye</span>
         </span>
       }
-      subtitle="Stay informed, stay safe. Real-time crisis updates for your community."
+      subtitle={<span className="text-slateSoft">Stay informed, stay safe. Real-time crisis updates for your community.</span>}
     >
       <div className="space-y-6">
-        <div className="overflow-hidden rounded-3xl bg-white shadow-md">
+        <div className="overflow-hidden glass-panel shadow-card">
           <div className="relative h-64 w-full">
             <Image
               src="/sample-crisis.png"
@@ -109,34 +109,34 @@ export default function CitizenDashboard() {
             </button>
           </div>
 
-          <div className="space-y-3 px-6 py-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-500">
+            <div className="space-y-3 px-6 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
               VALIDATE ALERT
             </p>
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-xl font-semibold text-white">
               Firefighters Contain Forest Park Wildfire
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slateSoft leading-relaxed">
               Fire crews working around the clock have successfully established
               firebreaks. Evacuation orders remain in effect for zone MN-65.
             </p>
           </div>
 
           {/* Alert tags row */}
-          <div className="flex flex-wrap gap-3 border-t border-slate-100 bg-slate-50 px-6 py-3 text-sm">
+          <div className="flex flex-wrap gap-3 border-t border-white/10 bg-white/5 px-6 py-3 text-sm">
             {alerts.map((alert) => (
               <div
                 key={alert.label}
-                className="flex flex-1 min-w-[160px] items-center justify-between rounded-full bg-white px-4 py-2 shadow-sm"
+                className="flex flex-1 min-w-[160px] items-center justify-between rounded-full bg-white/10 border border-white/5 px-4 py-2 shadow-sm"
               >
                 <div className="space-y-0.5">
-                  <p className="text-xs font-medium text-slate-600">
+                  <p className="text-xs font-medium text-slate-200">
                     {alert.location}
                   </p>
-                  <p className="text-xs text-slate-400">{alert.label}</p>
+                  <p className="text-[10px] text-slateSoft uppercase tracking-wider">{alert.label}</p>
                 </div>
                 <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold text-white ${alert.color}`}
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white ${alert.color.replace('bg-', 'bg-opacity-80 bg-')}`} // Adjust opacity for glow effect if needed, but keeping simple for now
                 >
                   {alert.level}
                 </span>
@@ -150,8 +150,8 @@ export default function CitizenDashboard() {
           {/* Community stories */}
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <p className="font-semibold text-slate-900">Community Stories</p>
-              <button className="text-sm text-slate-500 hover:text-slate-700">
+              <p className="font-semibold text-white">Community Stories</p>
+              <button className="text-sm text-tealGlow hover:text-white transition">
                 View all →
               </button>
             </div>
@@ -159,7 +159,7 @@ export default function CitizenDashboard() {
               {stories.map((story) => (
                 <article
                   key={story.title}
-                  className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                  className="overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-sm hover:border-tealGlow/30 transition"
                 >
                   <div className="relative h-32 w-full">
                     <Image
@@ -170,10 +170,10 @@ export default function CitizenDashboard() {
                     />
                   </div>
                   <div className="space-y-2 px-4 py-3">
-                    <h3 className="text-base font-semibold text-slate-900">
+                    <h3 className="text-sm font-semibold text-white leading-snug">
                       {story.title}
                     </h3>
-                    <p className="text-sm text-slate-500">{story.subtitle}</p>
+                    <p className="text-xs text-slateSoft">{story.subtitle}</p>
                   </div>
                 </article>
               ))}
@@ -182,8 +182,8 @@ export default function CitizenDashboard() {
 
           {/* Take action + safety */}
           <div className="space-y-4">
-            <div className="rounded-3xl bg-[#0b1020] px-5 py-4 text-slate-50 shadow-md">
-              <p className="text-sm font-semibold">Take Action</p>
+            <div className="rounded-3xl bg-tealGlow/10 border border-tealGlow/20 px-5 py-4 text-white shadow-glow">
+              <p className="text-sm font-semibold text-tealGlow">Take Action</p>
               <div className="mt-4 space-y-2 text-sm">
                 <ActionButton
                   icon={<MessageCircle className="h-4 w-4" />}
@@ -198,15 +198,15 @@ export default function CitizenDashboard() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white px-5 py-4 text-sm text-slate-700 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">
+            <div className="glass-panel px-5 py-4 text-sm text-slateSoft shadow-card">
+              <p className="text-sm font-semibold text-white">
                 Safety Guidance
               </p>
               <ul className="mt-3 space-y-2">
                 {safety.map((item) => (
                   <li
                     key={item}
-                    className="flex items-center justify-between rounded-full bg-slate-50 px-3 py-2"
+                    className="flex items-center justify-between rounded-full bg-white/5 border border-white/5 px-3 py-2"
                   >
                     <span className="text-xs">{item}</span>
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
@@ -218,13 +218,13 @@ export default function CitizenDashboard() {
         </div>
 
         {/* Crisis breakdown table */}
-        <div className="rounded-3xl bg-white px-5 py-4 text-sm text-slate-700 shadow-md">
-          <p className="text-sm font-semibold text-slate-900">
+        <div className="glass-panel px-5 py-4 text-sm text-slateSoft shadow-card">
+          <p className="text-sm font-semibold text-white">
             Crisis Breakdown
           </p>
           <div className="mt-3 overflow-x-auto">
             <table className="min-w-full border-separate border-spacing-y-2 text-sm">
-              <thead className="text-xs text-slate-400">
+              <thead className="text-xs text-slateSoft uppercase tracking-wider">
                 <tr>
                   <th className="text-left font-medium">Crisis</th>
                   <th className="text-left font-medium">Location</th>
@@ -234,15 +234,15 @@ export default function CitizenDashboard() {
               </thead>
               <tbody>
                 {tableRows.map((row, idx) => (
-                  <tr key={idx} className="rounded-xl bg-slate-50">
-                    <td className="rounded-l-xl px-3 py-3 text-slate-700">
+                  <tr key={idx} className="rounded-xl bg-white/5 hover:bg-white/10 transition">
+                    <td className="rounded-l-xl px-3 py-3 text-white">
                       {row.crisis}
                     </td>
-                    <td className="px-3 py-3 text-slate-500">{row.location}</td>
-                    <td className="px-3 py-3 text-slate-500">{row.date}</td>
+                    <td className="px-3 py-3 text-slateSoft">{row.location}</td>
+                    <td className="px-3 py-3 text-slateSoft">{row.date}</td>
                     <td className="rounded-r-xl px-3 py-3">
                       <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold text-white ${row.color}`}
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white ${row.color}`}
                       >
                         {row.status}
                       </span>
@@ -269,15 +269,15 @@ function ActionButton({
 }) {
   return (
     <button
-      className={`flex w-full items-center justify-between rounded-2xl px-3 py-2 ${
-        primary ? "bg-white text-[#0b1020]" : "bg-[#151a2a] text-slate-200"
+      className={`flex w-full items-center justify-between rounded-2xl px-3 py-3 transition hover:scale-[1.02] ${
+        primary ? "bg-tealGlow text-night font-semibold shadow-glow" : "bg-white/10 hover:bg-white/20 text-white border border-white/5"
       }`}
     >
       <span className="flex items-center gap-2 text-xs">
         {icon}
         <span>{label}</span>
       </span>
-      <span className="text-[11px] text-slate-400">→</span>
+      <span className={`text-[10px] ${primary ? "text-night/70" : "text-slate-400"}`}>→</span>
     </button>
   );
 }

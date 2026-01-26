@@ -51,7 +51,7 @@ export default function ReportIncidentPage() {
     >
       <div className="space-y-6">
         {/* Stepper */}
-        <div className="rounded-3xl bg-white p-6 shadow-md">
+        <div className="glass-panel p-6 shadow-card">
           <div className="grid grid-cols-4 items-center gap-6">
             <StepItem label="Type & Severity" active />
             <StepItem label="Details" />
@@ -61,8 +61,8 @@ export default function ReportIncidentPage() {
         </div>
 
         {/* Main card */}
-        <div className="rounded-3xl bg-white p-6 shadow-md">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <div className="glass-panel p-6 shadow-card">
+          <h2 className="text-lg font-semibold text-white">
             What type of incident are you reporting ?
           </h2>
 
@@ -81,7 +81,7 @@ export default function ReportIncidentPage() {
             <div className="hidden sm:block" />
           </div>
 
-          <h3 className="mt-10 text-sm font-semibold text-slate-900">
+          <h3 className="mt-10 text-sm font-semibold text-white">
             How severe is the situation ?
           </h3>
 
@@ -99,8 +99,8 @@ export default function ReportIncidentPage() {
           <button
             className={`mt-10 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition ${
               canContinue
-                ? "bg-[#0b1020] text-white hover:bg-[#0b1020]/95"
-                : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                ? "bg-tealGlow text-night shadow-glow hover:bg-tealGlow/90"
+                : "bg-white/10 text-slate-500 cursor-not-allowed"
             }`}
             disabled={!canContinue}
             onClick={() => {
@@ -122,16 +122,16 @@ function StepItem({ label, active }: { label: string; active?: boolean }) {
     <div className="flex items-center gap-3">
       <div
         className={`h-10 w-10 rounded-full flex items-center justify-center ${
-          active ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-500"
+          active ? "bg-tealGlow text-night shadow-glow" : "bg-white/10 text-slate-500"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
       </div>
       <div className="min-w-0">
-        <p className={`text-xs font-semibold ${active ? "text-blue-600" : "text-slate-500"}`}>
+        <p className={`text-xs font-semibold ${active ? "text-tealGlow" : "text-slate-500"}`}>
           {label}
         </p>
-        <div className="mt-2 h-[2px] w-full rounded-full bg-slate-200" />
+        <div className="mt-2 h-[2px] w-full rounded-full bg-white/10" />
       </div>
     </div>
   );
@@ -152,13 +152,13 @@ function SelectableBox({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-white text-xs shadow-sm transition ${
+      className={`flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-white/5 text-xs shadow-sm transition ${
         selected
-          ? "border-blue-600 ring-2 ring-blue-200 text-slate-900"
-          : "border-slate-200 hover:border-slate-300 text-slate-700"
+          ? "border-tealGlow ring-1 ring-tealGlow/50 text-white bg-tealGlow/10"
+          : "border-white/10 hover:border-white/20 text-slateSoft hover:bg-white/10"
       }`}
     >
-      {icon ? <span className={`${selected ? "text-blue-600" : "text-slate-500"}`}>{icon}</span> : null}
+      {icon ? <span className={`${selected ? "text-tealGlow" : "text-slate-400"}`}>{icon}</span> : null}
       <span className="font-medium">{label}</span>
     </button>
   );

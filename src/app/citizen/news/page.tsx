@@ -66,7 +66,7 @@ export default function NewsPage() {
     >
       <div className="space-y-6">
         {/* Hero banner */}
-        <div className="overflow-hidden rounded-3xl bg-white shadow-md">
+        <div className="overflow-hidden glass-panel shadow-card">
           <div className="relative h-64 w-full">
             <Image
               src={heroArticle.image}
@@ -88,25 +88,25 @@ export default function NewsPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
               Breaking Alert
             </p>
-            <h2 className="text-lg font-semibold text-slate-900">{heroArticle.title}</h2>
-            <p className="text-xs text-slate-500">{heroArticle.body}</p>
+            <h2 className="text-lg font-semibold text-white">{heroArticle.title}</h2>
+            <p className="text-xs text-slateSoft">{heroArticle.body}</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="rounded-3xl bg-white px-5 py-3 shadow-md">
+        <div className="glass-panel px-5 py-3 shadow-card">
           <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="text-slate-500">Filter by category :</span>
-            <button className="rounded-full bg-slate-100 px-3 py-1 text-[11px] text-slate-600">
+            <span className="text-slateSoft">Filter by category :</span>
+            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
               All News
             </button>
-            <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white">
+            <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white shadow-glow">
               Breaking News
             </button>
-            <button className="rounded-full bg-slate-100 px-3 py-1 text-[11px] text-slate-600">
+            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
               Updates
             </button>
-            <button className="rounded-full bg-slate-100 px-3 py-1 text-[11px] text-slate-600">
+            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
               Safety Tips
             </button>
           </div>
@@ -115,12 +115,12 @@ export default function NewsPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,0.9fr)]">
           {/* Left: Breaking news list */}
           <div className="space-y-4">
-            <p className="text-sm font-semibold text-slate-900">Breaking News</p>
+            <p className="text-sm font-semibold text-white">Breaking News</p>
 
             {breakingNews.map((item) => (
               <article
                 key={item.id}
-                className="overflow-hidden rounded-3xl bg-white shadow-md"
+                className="overflow-hidden glass-panel shadow-card"
               >
                 <div className="grid gap-0 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
                   {/* Text */}
@@ -143,9 +143,9 @@ export default function NewsPage() {
                         </span>
                       ))}
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-                    <p className="text-xs leading-relaxed text-slate-600">{item.body}</p>
-                    <div className="mt-3 flex flex-wrap gap-4 text-[10px] text-slate-400">
+                    <h3 className="text-sm font-semibold text-white">{item.title}</h3>
+                    <p className="text-xs leading-relaxed text-slateSoft">{item.body}</p>
+                    <div className="mt-3 flex flex-wrap gap-4 text-[10px] text-slateSoft">
                       <span>Location: {item.location}</span>
                       <span>{item.time}</span>
                     </div>
@@ -168,13 +168,13 @@ export default function NewsPage() {
           {/* Right column */}
           <div className="space-y-5">
             {/* Trending now */}
-            <div className="rounded-3xl bg-white p-5 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">Trending Now</p>
-              <div className="mt-4 space-y-2 text-xs text-slate-700">
+            <div className="glass-panel p-5 shadow-card">
+              <p className="text-sm font-semibold text-white">Trending Now</p>
+              <div className="mt-4 space-y-2 text-xs text-slateSoft">
                 {trendingNow.map((t, idx) => (
                   <div
                     key={idx}
-                    className="rounded-2xl bg-slate-50 px-4 py-3"
+                    className="rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-slate-200"
                   >
                     {t}
                   </div>
@@ -183,10 +183,10 @@ export default function NewsPage() {
             </div>
 
             {/* Summary */}
-            <div className="rounded-3xl bg-white p-5 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">Today&apos;s Summary</p>
+            <div className="glass-panel p-5 shadow-card">
+              <p className="text-sm font-semibold text-white">Today&apos;s Summary</p>
               <div className="mt-4 space-y-3 text-xs text-slate-100">
-                <div className="flex items-center justify-between rounded-2xl bg-slate-800 px-4 py-3">
+                <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 border border-white/5">
                   <span>Articles Published</span>
                   <span className="font-semibold">{summary.articles}</span>
                 </div>
@@ -202,12 +202,12 @@ export default function NewsPage() {
             </div>
 
             {/* Subscribe */}
-            <div className="rounded-3xl bg-white p-5 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">Stay Updated</p>
-              <p className="mt-2 text-xs text-slate-600">
+            <div className="glass-panel p-5 shadow-card">
+              <p className="text-sm font-semibold text-white">Stay Updated</p>
+              <p className="mt-2 text-xs text-slateSoft">
                 Subscribe to get instant notifications for breaking news and alerts.
               </p>
-              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0b1020] px-4 py-3 text-sm font-semibold text-white">
+              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow hover:bg-tealGlow/90 transition">
                 <Newspaper className="h-4 w-4" />
                 Subscribe To Alerts
               </button>

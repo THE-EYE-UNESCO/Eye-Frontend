@@ -14,6 +14,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import ThreeBackground from "@/components/ThreeBackground";
 
 const stats = [
   { value: "150+", label: "Countries Monitored" },
@@ -96,13 +97,14 @@ export default function Home() {
 
   return (
     <main className="relative overflow-hidden bg-night text-white" id="top">
+      <ThreeBackground />
       {/* Background Glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 top-20 h-80 w-80 rounded-full bg-cyanGlow/40 blur-[140px] animate-pulseGlow" />
         <div className="absolute right-0 top-32 h-96 w-96 rounded-full bg-tealGlow/30 blur-[160px] animate-pulseGlow" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-none flex-col gap-16 px-16 pb-20 pt-4 sm:px-20 lg:px-28">
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-8 pt-6 sm:px-8 lg:px-10">
         {/* HEADER */}
         <div className="sticky top-6 z-40">
           <div className="gradient-border rounded-3xl">

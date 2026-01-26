@@ -95,9 +95,9 @@ export default function CommunityHubPage() {
           <div className="space-y-6">
             {/* Share your story (button) */}
             {!isComposerOpen && (
-              <div className="rounded-3xl bg-white p-4 shadow-md">
+              <div className="glass-panel p-4 shadow-card">
                 <button
-                  className="w-full rounded-2xl bg-[#0b1020] px-4 py-3 text-sm font-semibold text-white"
+                  className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow hover:shadow-lg transition"
                   onClick={() => setIsComposerOpen(true)}
                 >
                   + Share your Story
@@ -107,11 +107,11 @@ export default function CommunityHubPage() {
 
             {/* Share your story (composer card like screenshot) */}
             {isComposerOpen && (
-              <div className="rounded-3xl bg-white p-5 shadow-md">
+              <div className="glass-panel p-5 shadow-card">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-900">Share your Story</p>
+                  <p className="text-sm font-semibold text-white">Share your Story</p>
                   <button
-                    className="rounded-full p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                    className="rounded-full p-2 text-slateSoft hover:bg-white/10 hover:text-white"
                     onClick={() => setIsComposerOpen(false)}
                     aria-label="Close"
                   >
@@ -123,20 +123,20 @@ export default function CommunityHubPage() {
                   <input
                     value={storyTitle}
                     onChange={(e) => setStoryTitle(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
                     placeholder="Story title..."
                   />
                   <textarea
                     value={storyBody}
                     onChange={(e) => setStoryBody(e.target.value)}
-                    className="h-24 w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                    className="h-24 w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
                     placeholder="Tell your story... How has the community helped you? What inspiring acts have you witnessed"
                   />
 
                   <div className="flex items-center justify-between">
                     <button
                       type="button"
-                      className="inline-flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600"
+                      className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-xs font-semibold text-slateSoft hover:text-white transition"
                     >
                       <ImageIcon className="h-4 w-4" />
                       Add Photo
@@ -145,8 +145,8 @@ export default function CommunityHubPage() {
 
                   <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
                     <button
-                      className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold sm:flex-1 ${
-                        canShare ? "bg-[#0b1020] text-white" : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold sm:flex-1 transition ${
+                        canShare ? "bg-tealGlow text-night shadow-glow hover:bg-tealGlow/90" : "bg-white/10 text-slateSoft cursor-not-allowed"
                       }`}
                       disabled={!canShare}
                       onClick={() => {
@@ -160,7 +160,7 @@ export default function CommunityHubPage() {
                       Share Story
                     </button>
                     <button
-                      className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 sm:w-40"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slateSoft sm:w-40 hover:bg-white/10 transition"
                       onClick={() => {
                         setIsComposerOpen(false);
                         setStoryTitle("");
@@ -176,30 +176,30 @@ export default function CommunityHubPage() {
 
             {/* Feed */}
             {posts.map((p) => (
-              <article key={p.id} className="overflow-hidden rounded-3xl bg-white shadow-md">
+              <article key={p.id} className="overflow-hidden glass-panel shadow-card">
                 <div className="flex items-center justify-between px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-slate-200" />
+                    <div className="h-10 w-10 rounded-full bg-slate-700" />
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">{p.author}</p>
-                      <p className="text-[11px] text-slate-400">{p.time}</p>
+                      <p className="text-sm font-semibold text-white">{p.author}</p>
+                      <p className="text-[11px] text-slateSoft">{p.time}</p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold text-slate-500">
+                  <span className="rounded-full bg-white/10 border border-white/5 px-3 py-1 text-[10px] font-semibold text-slateSoft">
                     {p.tag}
                   </span>
                 </div>
 
                 <div className="space-y-3 px-5 pb-4">
-                  <h3 className="text-sm font-semibold text-slate-900">{p.title}</h3>
-                  <p className="text-xs leading-relaxed text-slate-600">{p.body}</p>
+                  <h3 className="text-sm font-semibold text-white">{p.title}</h3>
+                  <p className="text-xs leading-relaxed text-slateSoft">{p.body}</p>
                 </div>
 
                 <div className="relative h-48 w-full bg-slate-100">
                   <Image src={p.image} alt={p.title} fill className="object-cover" />
                 </div>
 
-                <div className="flex items-center gap-6 px-5 py-4 text-[11px] text-slate-500">
+                <div className="flex items-center gap-6 px-5 py-4 text-[11px] text-slateSoft">
                   <span className="inline-flex items-center gap-2">
                     <Heart className="h-4 w-4" /> {p.likes}
                   </span>
@@ -211,14 +211,14 @@ export default function CommunityHubPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3 text-xs">
-                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-slate-700 shadow-sm">
+                <div className="grid grid-cols-3 gap-2 border-t border-white/10 bg-white/5 px-5 py-3 text-xs">
+                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 px-3 py-2 text-slateSoft shadow-sm transition">
                     <Heart className="h-4 w-4" /> Like
                   </button>
-                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-slate-700 shadow-sm">
+                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 px-3 py-2 text-slateSoft shadow-sm transition">
                     <MessageCircle className="h-4 w-4" /> Comment
                   </button>
-                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-slate-700 shadow-sm">
+                  <button className="flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 px-3 py-2 text-slateSoft shadow-sm transition">
                     <Share2 className="h-4 w-4" /> Share
                   </button>
                 </div>
@@ -228,13 +228,13 @@ export default function CommunityHubPage() {
 
           {/* Right column */}
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white p-5 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">Popular Topics</p>
+            <div className="glass-panel p-5 shadow-card">
+              <p className="text-sm font-semibold text-white">Popular Topics</p>
               <div className="mt-4 space-y-2">
                 {topics.map((t) => (
                   <div
                     key={t}
-                    className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-600"
+                    className="rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-xs font-semibold text-slateSoft hover:text-white hover:border-tealGlow/30 transition cursor-pointer"
                   >
                     {t}
                   </div>
@@ -242,23 +242,23 @@ export default function CommunityHubPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-5 shadow-md">
-              <p className="text-sm font-semibold text-slate-900">Community Guidelines</p>
-              <ul className="mt-4 space-y-3 text-xs text-slate-600">
+            <div className="glass-panel p-5 shadow-card">
+              <p className="text-sm font-semibold text-white">Community Guidelines</p>
+              <ul className="mt-4 space-y-3 text-xs text-slateSoft">
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-tealGlow" />
                   Be respectful and supportive
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-tealGlow" />
                   Share authentic experiences
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-tealGlow" />
                   No misinformation
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-tealGlow" />
                   Protect privacy
                 </li>
               </ul>

@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import Image from "next/image";
+import ThreeBackground from "@/components/ThreeBackground";
 
 export function CitizenShell({
   title,
@@ -58,12 +59,13 @@ export function CitizenShell({
   ];
 
   return (
-    <main className="min-h-screen bg-[#f3f5fb] text-slate-900 citizen-main">
+    <main className="min-h-screen bg-night text-white citizen-main relative">
+      <ThreeBackground />
       <div className="flex min-h-screen">
         {/* Add left margin to compensate for fixed sidebar on desktop */}
         <div className="sm:ml-60 flex-1 flex flex-col">
         {/* Sidebar */}
-        <aside className="hidden fixed top-0 left-0 h-screen w-60 flex-col bg-[#0b1020] text-slate-100 sm:flex z-30 citizen-sidebar">
+        <aside className="hidden fixed top-0 left-0 h-screen w-60 flex-col bg-ocean text-slate-100 sm:flex z-30 citizen-sidebar border-r border-white/5">
           <div className="flex items-center gap-2 border-b border-white/10 px-6 py-6">
             <span className="text-base font-semibold uppercase tracking-[0.25em] text-white">
               THE EYE
@@ -90,31 +92,47 @@ export function CitizenShell({
           </nav>
 
           <div className="mt-auto space-y-4 px-4 pb-6 text-sm">
-            <div className="rounded-2xl bg-[#151a2a] px-4 py-3 text-center text-slate-200 sidebar-upgrade">
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-center text-slate-200 sidebar-upgrade">
               <p className="text-xs font-semibold uppercase tracking-wide">
                 Upgrade to PRO
               </p>
               <p className="mt-1 text-xs text-slate-400">
                 Get access to all features.
               </p>
-              <button className="mt-3 w-full rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0b1020]">
+              <button className="mt-3 w-full rounded-full bg-tealGlow px-3 py-1.5 text-xs font-semibold text-night shadow-glow hover:shadow-lg transition">
                 Get Pro Now!
               </button>
             </div>
             <Link
               href="/citizen/profile"
-              className="flex items-center gap-2 rounded-xl px-2 py-2 text-xs text-slate-400 hover:bg-white/5 sidebar-profile"
+              className={`flex items-center gap-2 rounded-xl px-2 py-1.5 text-xs sidebar-profile transition ${
+                pathname === "/citizen/profile"
+                  ? "bg-white/10 text-white border border-white/5 shadow-sm"
+                  : "text-slate-400 hover:bg-white/5"
+              }`}
             >
               <Image
                 src="/profile.png"
                 alt="Profile avatar"
-                width={28}
-                height={28}
-                className="h-7 w-7 rounded-full object-cover"
+                width={24}
+                height={24}
+                className="h-6 w-6 rounded-full object-cover"
               />
-              <div>
-                <p className="font-medium text-slate-100">Dianah IRANZI</p>
-                <p className="profile-email">iradianah5@gmail.com</p>
+              <div className="min-w-0">
+                <p
+                  className={`font-medium text-[11px] truncate ${
+                    pathname === "/citizen/profile" ? "text-white" : "text-slate-100"
+                  }`}
+                >
+                  Dianah IRANZI
+                </p>
+                <p
+                  className={`text-[10px] truncate ${
+                    pathname === "/citizen/profile" ? "text-slate-200" : "text-slate-500"
+                  }`}
+                >
+                  iradianah5@gmail.com
+                </p>
               </div>
             </Link>
           </div>
@@ -126,12 +144,12 @@ export function CitizenShell({
           {(title || subtitle) && (
             <div className="mt-6 space-y-1">
               {title && (
-                <div className="text-2xl font-semibold text-slate-900">
+                <div className="text-2xl font-semibold text-white">
                   {title}
                 </div>
               )}
               {subtitle && (
-                <div className="text-base text-slate-500">{subtitle}</div>
+                <div className="text-sm text-slateSoft">{subtitle}</div>
               )}
             </div>
           )}

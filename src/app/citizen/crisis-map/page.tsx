@@ -149,33 +149,33 @@ export default function CrisisMapPage() {
         {/* Left column */}
         <div className="space-y-6">
           {/* Search + filter bar */}
-          <div className="rounded-3xl bg-white p-4 shadow-md">
+          <div className="glass-panel p-4 shadow-card">
             <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <Search className="h-4 w-4 text-slate-400" />
+              <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <Search className="h-4 w-4 text-slateSoft" />
                 <input
-                  className="w-full bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                  className="w-full bg-transparent text-sm text-white placeholder:text-slateSoft focus:outline-none"
                   placeholder="Search incidents or locations..."
                 />
               </div>
-              <button className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+              <button className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white hover:bg-white/10 transition">
                 <span>All Types</span>
-                <span className="text-slate-400">▾</span>
+                <span className="text-slateSoft">▾</span>
               </button>
             </div>
           </div>
 
           {/* Map card */}
-          <div className="rounded-3xl bg-white p-4 shadow-md">
+          <div className="glass-panel p-4 shadow-card">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-900">Interactive Map</p>
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
+              <p className="text-sm font-semibold text-white">Interactive Map</p>
+              <div className="flex items-center gap-2 text-xs text-slateSoft">
+                <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                 <span>Live Updates</span>
               </div>
             </div>
 
-            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-night">
               <div className="relative h-[360px] w-full">
                 <RLMapContainer
                   center={[-1.95, 30.06] as [number, number]}
@@ -221,7 +221,7 @@ export default function CrisisMapPage() {
             </div>
 
             {/* legend */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-slate-500">
+            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-slateSoft">
               {legend.map((l) => (
                 <div key={l.label} className="flex items-center gap-2">
                   <span className={`h-2.5 w-2.5 rounded-full ${l.color}`} />
@@ -231,16 +231,16 @@ export default function CrisisMapPage() {
             </div>
 
             {/* tip */}
-            <div className="mt-4 rounded-2xl bg-[#eef6ff] px-4 py-3 text-[11px] text-slate-600">
-              <span className="font-semibold">Tip:</span> Click on any incident marker to view detailed information
+            <div className="mt-4 rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-[11px] text-slateSoft">
+              <span className="font-semibold text-tealGlow">Tip:</span> Click on any incident marker to view detailed information
             </div>
           </div>
         </div>
 
         {/* Right column */}
         <div className="space-y-6">
-          <div className="rounded-3xl bg-white px-5 py-5 shadow-md">
-            <p className="text-sm font-semibold text-slate-900">
+          <div className="glass-panel px-5 py-5 shadow-card">
+            <p className="text-sm font-semibold text-white">
               {selectedIncident ? "Incident Details" : "No Incident Selected"}
             </p>
 
@@ -264,57 +264,57 @@ export default function CrisisMapPage() {
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">{selectedIncident.title}</p>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                  <p className="text-sm font-semibold text-white">{selectedIncident.title}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slateSoft">
                     {selectedIncident.description}
                   </p>
                 </div>
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-slate-400">Location</p>
-                    <div className="mt-2 rounded-2xl bg-slate-50 px-4 py-3 text-[11px] text-slate-700">
+                    <p className="text-[10px] uppercase tracking-wide text-slateSoft">Location</p>
+                    <div className="mt-2 rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-[11px] text-white">
                       {selectedIncident.locationLabel}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl bg-slate-50 px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-wide text-slate-400">
+                    <div className="rounded-2xl bg-white/5 border border-white/5 px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-wide text-slateSoft">
                         Affected Radius
                       </p>
-                      <p className="mt-1 text-[11px] text-slate-700">
+                      <p className="mt-1 text-[11px] text-white">
                         {selectedIncident.affectedRadiusKm} km
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-slate-50 px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Status</p>
-                      <p className="mt-1 text-[11px] text-slate-700">{selectedIncident.status}</p>
+                    <div className="rounded-2xl bg-white/5 border border-white/5 px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-wide text-slateSoft">Status</p>
+                      <p className="mt-1 text-[11px] text-white">{selectedIncident.status}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white">
+                  <button className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-xs font-semibold text-night shadow-glow hover:shadow-lg transition">
                     Get Safety Instructions
                   </button>
-                  <button className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-xs font-semibold text-slate-800">
+                  <button className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold text-white hover:bg-white/10 transition">
                     Share This Alert
                   </button>
                 </div>
               </div>
             ) : (
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-slateSoft">
                 Click on any marker on the map to view incident details.
               </p>
             )}
           </div>
 
-          <div className="rounded-3xl bg-white px-5 py-5 shadow-md">
-            <p className="text-sm font-semibold text-slate-900">Map Statistics</p>
+          <div className="glass-panel px-5 py-5 shadow-card">
+            <p className="text-sm font-semibold text-white">Map Statistics</p>
 
             <div className="mt-4 space-y-3 text-xs">
-              <div className="flex items-center justify-between rounded-2xl bg-slate-800 px-4 py-3 text-white">
+              <div className="flex items-center justify-between rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-white">
                 <span>Total Incidents</span>
                 <span className="font-semibold">6</span>
               </div>
