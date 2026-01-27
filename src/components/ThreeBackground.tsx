@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import * as React from "react";
+import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
+// Added comment to trigger IDE type refresh
 import * as THREE from "three";
 import { useTheme } from "next-themes";
 
@@ -27,7 +29,7 @@ function Particles(props: any) {
     return positions;
   });
 
-  useFrame((state, delta) => {
+  useFrame((state: any, delta: number) => {
     if (ref.current) {
         ref.current.rotation.x -= delta / 30; // Slow rotation
         ref.current.rotation.y -= delta / 45;
