@@ -27,14 +27,14 @@
   --color-bg-primary: #f8fafc;
   --color-bg-secondary: #e2e8f0;
   --color-card-bg: rgba(255, 255, 255, 0.95);
-  --color-card-border: rgba(0, 0, 0, 0.15);
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #64748b;
+  --color-card-border: rgba(0, 0, 0, 0.08);
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
   --color-ocean: rgba(255, 255, 255, 0.98);
-  --shadow-glow-val: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-glow-btn: 0 2px 10px rgba(13, 148, 136, 0.2);
-  --shadow-glow-red: 0 2px 8px rgba(239, 68, 68, 0.15);
+  --shadow-glow-val: 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-glow-btn: 0 1px 6px rgba(13, 148, 136, 0.08);
+  --shadow-glow-red: 0 1px 4px rgba(239, 68, 68, 0.08);
 }
 
 
@@ -66,6 +66,11 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
   --breakpoint-xs: 480px;
+}
+
+/* Lock base font size to prevent any scaling on deployment */
+html {
+  font-size: 16px !important;
 }
 
 body {
