@@ -127,7 +127,7 @@ export default function CitizenDashboard() {
             {alerts.map((alert) => (
               <div
                 key={alert.label}
-                className="flex flex-1 min-w-[160px] items-center justify-between rounded-full bg-card-bg border border-card-border px-4 py-2 shadow-sm"
+                className="flex flex-1 min-w-[160px] items-center justify-between rounded-2xl bg-card-bg border border-card-border px-4 py-2 shadow-sm"
               >
                 <div className="space-y-0.5">
                   <p className="text-xs font-medium text-text-primary">

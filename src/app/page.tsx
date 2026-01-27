@@ -279,19 +279,21 @@ export default function Home() {
         </section>
 
         {/* STATS */}
-        <section className="flex justify-center">
-          <div className="gradient-border rounded-[32px]">
-            <div className="glass-panel flex w-full max-w-4xl flex-col gap-6 rounded-[32px] border border-card-border bg-card-bg px-12 py-10 text-center text-2xl sm:flex-row sm:items-center sm:justify-between">
-              {stats.map((stat) => (
-                <div key={stat.label} className="space-y-2">
-                  <p className="text-5xl font-semibold text-tealGlow">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm uppercase tracking-[0.4em] text-text-primary">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
+        <section className="flex justify-center -mt-12 relative z-10">
+          <div className="w-full max-w-5xl px-4">
+            <div className="rounded-[40px] border border-card-border bg-card-bg backdrop-blur-xl p-1 shadow-glow-button">
+              <div className="flex flex-col gap-8 rounded-[36px] bg-bg-primary/40 px-12 py-10 text-center sm:flex-row sm:items-center sm:justify-between">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="flex-1 space-y-3">
+                    <p className="text-5xl font-extrabold tracking-tight text-tealGlow">
+                      {stat.value}
+                    </p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-text-primary opacity-80">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
