@@ -3,124 +3,125 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, ArrowRight } from "lucide-react";
+import { Eye, Zap, TrendingUp, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import ThreeBackground from "@/components/ThreeBackground";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/citizen");
+  };
+
   return (
-    <main className="min-h-screen flex flex-col md:flex-row bg-white overflow-hidden">
-      {/* Left Side: Form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-16 lg:p-24">
-        <div className="w-full max-w-md space-y-8">
-          <header className="text-center md:text-left">
-            <h1 className="text-4xl font-bold text-[#0F172A] tracking-tight">Login</h1>
+    <main className="min-h-screen flex flex-col md:flex-row bg-white">
+      {/* Left Side: Engaging Visuals (50%) */}
+      <div className="hidden md:flex md:w-1/2 bg-slate-900 relative items-center justify-center overflow-hidden p-12">
+         {/* Particles */}
+         <ThreeBackground className="absolute inset-0 z-0 pointer-events-none opacity-60" />
+
+         {/* Animated background elements */}
+         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute top-20 left-20 w-72 h-72 bg-tealGlow/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-3xl" />
+        </div>
+
+        {/* Bouncing/Pulsing Dots */}
+        <span className="absolute left-10 top-20 h-8 w-8 rounded-full bg-tealGlow/30 animate-bounce z-10" />
+        <span className="absolute right-12 bottom-24 h-12 w-12 rounded-full bg-tealGlow/20 animate-pulse delay-75 z-10" />
+
+        <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="mb-8">
+                <Eye className="h-24 w-24 text-tealGlow" />
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">THE EYE</h1>
+            <p className="text-lg text-slate-400 max-w-md">
+                Global Crisis Monitor. Real-time protection and analytics for a safer world.
+            </p>
+        </div>
+      </div>
+
+      {/* Right Side: Form (50%) */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-8 bg-white">
+        <div className="w-full max-w-lg">
+          {/* Mobile Branding - Visible only on small screens */}
+          <div className="md:hidden flex flex-col items-center mb-8">
+             <Eye className="h-12 w-12 text-tealGlow mb-2" />
+             <h1 className="text-2xl font-bold text-slate-900">THE EYE</h1>
+          </div>
+
+          <header className="mb-10 text-center md:text-left">
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h2>
+            <p className="text-slate-500">Sign in to continue monitoring</p>
           </header>
 
-          <form className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-2 px-1">Email Address</label>
-                <input
-                  type="email"
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-[#0F172A] placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-tealGlow/50 transition shadow-sm"
-                  placeholder=""
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-2 px-1">Password</label>
-                <input
-                  type="password"
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-[#0F172A] placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-tealGlow/50 transition shadow-sm"
-                  placeholder=""
-                />
-              </div>
+          <form className="space-y-6" onSubmit={handleLogin}>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+              <input
+                type="email"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
+                placeholder="john@example.com"
+              />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+              <input
+                type="password"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="remember"
-                  className="h-4 w-4 rounded border-slate-300 text-tealGlow focus:ring-tealGlow"
+                  className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                 />
-                <label htmlFor="remember" className="text-xs text-[#64748B]">
+                <label htmlFor="remember" className="text-sm text-slate-600">
                   Remember me
                 </label>
               </div>
-              <button type="button" className="text-xs font-semibold text-[#0F172A] hover:underline">
+              <button type="button" className="text-sm font-semibold text-slate-900 hover:underline">
                 Forgot password?
               </button>
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-2xl bg-[#0F172A] py-4 text-sm font-bold text-white shadow-xl hover:opacity-95 transition"
+              className="w-full rounded-xl bg-slate-900 py-4 text-sm font-bold text-white shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:shadow-slate-900/30 hover:scale-[1.02] transition-all duration-200"
             >
               Sign In
             </button>
           </form>
 
-          <div className="relative py-4">
+          <div className="relative py-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-100"></div>
+              <div className="w-full border-t border-slate-200"></div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-[#64748B] font-medium tracking-wide">Or continue with</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-4 text-slate-400 font-medium">Or continue with</span>
             </div>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-white py-3.5 text-sm font-bold text-[#0F172A] shadow-sm hover:bg-slate-50 transition">
-            <Image src="/google.svg" alt="Google" width={20} height={20} className="w-5 h-5" />
+          <button className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="w-5 h-5" />
             Google
           </button>
 
-          <div className="text-center text-sm text-[#64748B]">
+          <div className="text-center text-sm text-slate-500 mt-8">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="font-bold text-[#0F172A] hover:underline underline-offset-4">
-              Sign up
+            <Link href="/signup" className="text-slate-900 font-semibold hover:underline underline-offset-4">
+              Create Account
             </Link>
           </div>
-        </div>
-      </div>
-
-      {/* Right Side: Visual decoration */}
-      <div className="hidden md:flex flex-1 relative bg-[#020617] overflow-hidden">
-        {/* Background Decorative Shapes */}
-        <div className="absolute bottom-0 right-0 w-[120%] h-[120%] bg-[#cbd5e1] rounded-[150px] transform translate-x-[65%] translate-y-[15%] rotate-[-20deg]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-full bg-[#020617] transform -skew-x-[15deg] translate-x-12 translate-y-[-10%]" />
-        </div>
-        
-        {/* Content Overlay */}
-        <div className="relative z-10 w-full flex flex-col items-center justify-center p-12 text-center">
-          {/* Logo/Icon */}
-          <div className="mb-12 relative">
-             {/* Dots grid */}
-            <div className="absolute -top-32 left-1/2 -translate-x-1/2 grid grid-cols-5 gap-4 opacity-20">
-              {Array.from({ length: 25 }).map((_, i) => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full bg-white" />
-              ))}
-            </div>
-            
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-tealGlow/10 border border-tealGlow/30 backdrop-blur-xl shadow-2xl">
-              <Eye className="h-10 w-10 text-tealGlow" />
-            </div>
-          </div>
-
-          <h2 className="text-5xl font-extrabold tracking-[0.05em] text-white  mb-6">
-            Welcome Back !
-          </h2>
-          
-          <p className="max-w-xs text-lg font-medium text-slate-400 leading-relaxed">
-            Login to continue monitoring global crises
-          </p>
-        </div>
-
-        {/* Small Navigation/CTA icon in bottom right as seen in image */}
-        <div className="absolute bottom-10 right-10 z-20">
-           <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-tealGlow/40 text-tealGlow">
-              <ArrowRight className="h-5 w-5" />
-           </div>
         </div>
       </div>
     </main>

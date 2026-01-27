@@ -55,7 +55,7 @@ function Particles(props: any) {
   );
 }
 
-export default function ThreeBackground() {
+export default function ThreeBackground({ className }: { className?: string }) {
   const [mounted, setMounted] = React.useState(false);
   
   React.useEffect(() => {
@@ -65,7 +65,7 @@ export default function ThreeBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none opacity-40">
+    <div className={className || "fixed inset-0 z-[-1] pointer-events-none opacity-40"}>
         {/* Set z-index to -1 to be behind everything */}
       <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
         <Particles />

@@ -40,6 +40,9 @@ const config: Config = {
         "glow-red": "var(--shadow-glow-red)",
         card: "0 20px 40px rgba(15, 23, 42, 0.5)",
       },
+      animation: {
+        "spin-slow": "spin 8s linear infinite",
+      },
     },
   },
   plugins: [],
