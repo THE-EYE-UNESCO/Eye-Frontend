@@ -28,13 +28,13 @@ export default function ReportEvidencePage() {
         </div>
 
         <div className="glass-panel p-6 shadow-card space-y-6">
-          <h2 className="text-lg font-semibold text-white">Add evidence</h2>
+          <h2 className="text-lg font-semibold text-text-primary">Add evidence</h2>
 
           <label className="block">
-            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/10 bg-white/5 px-6 py-10 text-center hover:border-tealGlow/50 transition cursor-pointer">
-              <UploadCloud className="h-6 w-6 text-slateSoft" />
-              <p className="text-sm font-semibold text-white">Upload photos or videos</p>
-              <p className="text-xs text-slateSoft">Click to select files</p>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-card-border bg-card-bg px-6 py-10 text-center hover:border-tealGlow/50 transition cursor-pointer shadow-sm">
+              <UploadCloud className="h-6 w-6 text-tealGlow" />
+              <p className="text-sm font-semibold text-text-primary">Upload photos or videos</p>
+              <p className="text-xs text-text-muted">Click to select files</p>
             </div>
             <input
               type="file"
@@ -50,18 +50,18 @@ export default function ReportEvidencePage() {
 
           {files.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-white">Selected files</p>
+              <p className="text-xs font-semibold text-text-primary">Selected files</p>
               <div className="space-y-2">
                 {files.map((f) => (
                   <div
                     key={f.name}
-                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs"
+                    className="flex items-center justify-between rounded-xl border border-card-border bg-card-bg px-4 py-3 text-xs shadow-sm"
                   >
-                    <span className="flex items-center gap-2 text-white">
-                      <Paperclip className="h-4 w-4 text-slateSoft" />
+                    <span className="flex items-center gap-2 text-text-primary">
+                      <Paperclip className="h-4 w-4 text-tealGlow" />
                       {f.name}
                     </span>
-                    <span className="text-slateSoft">{Math.ceil(f.size / 1024)} KB</span>
+                    <span className="text-text-muted">{Math.ceil(f.size / 1024)} KB</span>
                   </div>
                 ))}
               </div>
@@ -71,7 +71,7 @@ export default function ReportEvidencePage() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-between">
             <button
               type="button"
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slateSoft sm:w-40 hover:bg-white/10 transition"
+              className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm font-semibold text-text-secondary sm:w-40 hover:bg-card-border/20 transition"
               onClick={() => router.back()}
             >
               Back
@@ -80,8 +80,8 @@ export default function ReportEvidencePage() {
               type="button"
               className={`w-full rounded-2xl px-4 py-3 text-sm font-semibold sm:w-56 transition ${
                 canSubmit
-                  ? "bg-tealGlow text-night shadow-glow hover:bg-tealGlow/90"
-                  : "bg-white/10 text-slateSoft cursor-not-allowed"
+                  ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90"
+                  : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
               }`}
               disabled={!canSubmit}
               onClick={() => {
@@ -111,23 +111,23 @@ function StepItem({
   return (
     <div className="flex items-center gap-3">
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? "bg-tealGlow text-night shadow-glow" : "bg-white/10 text-slateSoft"
+        className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
+          primary ? "bg-tealGlow text-night shadow-glow-button font-bold" : "bg-card-bg text-text-muted border border-card-border"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
       </div>
       <div className="min-w-0">
         <p
-          className={`text-xs font-semibold ${
-            active ? "text-tealGlow" : completed ? "text-white" : "text-slateSoft"
+          className={`text-xs font-semibold transition ${
+            active ? "text-tealGlow" : completed ? "text-text-primary" : "text-text-muted"
           }`}
         >
           {label}
         </p>
         <div
-          className={`mt-2 h-[2px] w-full rounded-full ${
-            completed ? "bg-tealGlow" : "bg-white/10"
+          className={`mt-2 h-[2px] w-full rounded-full transition ${
+            completed ? "bg-tealGlow" : "bg-card-border"
           }`}
         />
       </div>

@@ -2,26 +2,69 @@
 
 :root {
   color-scheme: dark;
+  --color-night: #020617;
+  --color-tealGlow: #1de9e6;
+  --color-cyanGlow: #5ef0ff;
+  --color-slateSoft: #9ca3af;
+  --color-bg-primary: #020617;
+  --color-bg-secondary: #060F18;
+  --color-card-bg: rgba(255, 255, 255, 0.05);
+  --color-card-border: rgba(255, 255, 255, 0.1);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --shadow-glow-val: 0 0 30px rgba(29, 233, 230, 0.7);
+  --shadow-glow-btn: 0 0 20px rgba(29, 233, 230, 0.5);
+  --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+.light {
+  color-scheme: light;
+  --color-night: #ffffff;
+  --color-tealGlow: #5AA8A7;
+  --color-cyanGlow: #88CFCE;
+  --color-slateSoft: #475569;
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-card-bg: rgba(255, 255, 255, 0.7);
+  --color-card-border: rgba(0, 0, 0, 0.08);
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-ocean: rgba(255, 255, 255, 0.98);
+  --shadow-glow-val: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-glow-btn: 0 4px 14px rgba(90, 168, 167, 0.3);
+  --shadow-glow-red: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 
 
 @theme {
-  --color-night: #020617;
-  --color-tealGlow: #1de9e6;
-  --color-cyanGlow: #5ef0ff;
-  --color-ocean: #020b1a;
-  --color-slateSoft: #9ca3af;
+  --color-night: var(--color-night);
+  --color-tealGlow: var(--color-tealGlow);
+  --color-cyanGlow: var(--color-cyanGlow);
+  --color-slateSoft: var(--color-slateSoft);
+  --color-ocean: var(--color-ocean, #020b1a);
+  
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-card-bg: var(--color-card-bg);
+  --color-card-border: var(--color-card-border);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
 
-  --font-family-poppins: var(--font-poppins), "Poppins", system-ui, sans-serif;
+  --font-family-sans: var(--font-inter), system-ui, sans-serif;
 
-  --shadow-glow: 0 0 30px rgba(29, 233, 230, 0.7);
+  --shadow-glow: var(--shadow-glow-val);
+  --shadow-glow-button: var(--shadow-glow-btn);
+  --shadow-glow-red: var(--shadow-glow-red);
   --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.5);
 }
 
 body {
-  @apply min-h-screen bg-night text-white antialiased;
-  font-family: var(--font-poppins, "Poppins"), "Poppins", system-ui, sans-serif;
+  @apply min-h-screen bg-night text-night antialiased;
+  font-family: var(--font-inter), system-ui, sans-serif;
   background-image:
     radial-gradient(
       circle at 20% 20%,
@@ -32,10 +75,35 @@ body {
       circle at 80% 0%,
       rgba(94, 240, 255, 0.08),
       transparent 50%
-    ),
-    linear-gradient(160deg, #020610 0%, #041024 40%, #050b18 100%);
+    );
+  
+  /* Use a lighter background gradient for light mode */
+  background-color: var(--color-night);
+  .dark & {
+    background-image:
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(55, 248, 194, 0.08),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 80% 0%,
+        rgba(94, 240, 255, 0.08),
+        transparent 50%
+      ),
+      linear-gradient(160deg, #020610 0%, #041024 40%, #050b18 100%);
+  }
+  
   font-size: clamp(0.875rem, 1vw, 1rem);
   line-height: 1.6;
+}
+
+/* Ensure text color adapts */
+.light body {
+  @apply text-slate-800;
+}
+.dark body {
+  @apply text-white;
 }
 
 .citizen-main {

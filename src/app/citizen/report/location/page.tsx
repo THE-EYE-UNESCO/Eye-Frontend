@@ -29,26 +29,26 @@ export default function ReportLocationPage() {
         </div>
 
         <div className="glass-panel p-6 shadow-card space-y-6">
-          <h2 className="text-xl font-semibold text-white">Where is this happening ?</h2>
+          <h2 className="text-xl font-semibold text-text-primary">Where is this happening ?</h2>
 
           <div className="space-y-5">
             {/* Precise location row */}
             <div className="grid gap-3 md:grid-cols-[1fr_160px] md:items-end">
               <div className="space-y-2">
-                <label className="block text-[11px] font-semibold text-slateSoft">
-                  Precise Location <span className="text-red-500">*</span>
+                <label className="block text-[11px] font-semibold text-text-muted">
+                  Precise Location <span className="text-red-600">*</span>
                 </label>
                 <input
                   value={preciseLocation}
                   onChange={(e) => setPreciseLocation(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
+                  className="w-full rounded-xl border border-card-border bg-card-bg px-4 py-3 text-xs text-text-primary placeholder:text-text-muted focus:border-tealGlow/50 focus:outline-none transition shadow-sm"
                   placeholder="street address or coordinates"
                 />
               </div>
 
               <button
                 type="button"
-                className="h-[44px] w-full rounded-xl bg-tealGlow/20 border border-tealGlow/30 px-4 text-xs font-semibold text-tealGlow hover:bg-tealGlow/30 transition"
+                className="h-[44px] w-full rounded-xl bg-tealGlow/10 border border-tealGlow/20 px-4 text-xs font-semibold text-tealGlow hover:bg-tealGlow/20 transition shadow-sm"
                 onClick={() => {
                   // Placeholder – could use navigator.geolocation in a later step
                   setPreciseLocation("Current location (auto)");
@@ -60,21 +60,21 @@ export default function ReportLocationPage() {
 
             {/* Landmark */}
             <div className="space-y-2">
-              <label className="block text-[11px] font-semibold text-slateSoft">
+              <label className="block text-[11px] font-semibold text-text-muted">
                 Nearby Landmark (Optional)
               </label>
               <input
                 value={landmark}
                 onChange={(e) => setLandmark(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder:text-slateSoft focus:border-tealGlow/50 focus:outline-none"
+                className="w-full rounded-xl border border-card-border bg-card-bg px-4 py-3 text-xs text-text-primary placeholder:text-text-muted focus:border-tealGlow/50 focus:outline-none transition shadow-sm"
                 placeholder="eg: Near Central Park, behind City Hall"
               />
             </div>
 
             {/* Map preview */}
-            <div className="h-64 w-full rounded-2xl border border-white/10 bg-white/5 flex flex-col items-center justify-center text-center">
-              <p className="text-sm font-semibold text-slate-200">Map preview will appear here</p>
-              <p className="mt-1 text-xs text-slateSoft max-w-xs">
+            <div className="h-64 w-full rounded-2xl border border-card-border bg-bg-secondary/50 flex flex-col items-center justify-center text-center backdrop-blur-sm shadow-inner">
+              <p className="text-sm font-semibold text-text-primary">Map preview will appear here</p>
+              <p className="mt-1 text-xs text-text-muted max-w-xs">
                 Showing approximate location based on your input
               </p>
             </div>
@@ -83,7 +83,7 @@ export default function ReportLocationPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
             <button
               type="button"
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slateSoft sm:w-40 hover:bg-white/10 transition"
+              className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm font-semibold text-text-muted sm:w-40 hover:bg-card-border/10 transition"
               onClick={() => router.back()}
             >
               Back
@@ -91,7 +91,7 @@ export default function ReportLocationPage() {
             <button
               type="button"
               className={`w-full rounded-2xl px-4 py-3 text-sm font-semibold sm:w-[420px] transition ${
-                canSubmit ? "bg-tealGlow text-night shadow-glow hover:bg-tealGlow/90" : "bg-white/10 text-slateSoft cursor-not-allowed"
+                canSubmit ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90" : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
               }`}
               disabled={!canSubmit}
               onClick={() => {
@@ -121,23 +121,23 @@ function StepItem({
   return (
     <div className="flex items-center gap-3">
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? "bg-tealGlow text-night shadow-glow" : "bg-white/10 text-slateSoft"
+        className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
+          primary ? "bg-tealGlow text-night shadow-glow-button font-bold" : "bg-card-bg text-text-muted border border-card-border"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
       </div>
       <div className="min-w-0">
         <p
-          className={`text-xs font-semibold ${
-            active ? "text-tealGlow" : completed ? "text-white" : "text-slateSoft"
+          className={`text-xs font-semibold transition ${
+            active ? "text-tealGlow" : completed ? "text-text-primary" : "text-text-muted"
           }`}
         >
           {label}
         </p>
         <div
-          className={`mt-2 h-[2px] w-full rounded-full ${
-            completed ? "bg-tealGlow" : "bg-white/10"
+          className={`mt-2 h-[2px] w-full rounded-full transition ${
+            completed ? "bg-tealGlow" : "bg-card-border"
           }`}
         />
       </div>

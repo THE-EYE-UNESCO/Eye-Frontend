@@ -31,11 +31,13 @@ const config: Config = {
         slateSoft: "#9ca3af",
       },
       fontFamily: {
-        poppins: ["var(--font-poppins)", "Poppins", "system-ui", "sans-serif"],
-        display: ["var(--font-poppins)", "Poppins", "system-ui", "sans-serif"],
+        inter: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 30px rgba(29, 233, 230, 0.7)",
+        glow: "var(--shadow-glow)",
+        "glow-button": "var(--shadow-glow-button)",
+        "glow-red": "var(--shadow-glow-red)",
         card: "0 20px 40px rgba(15, 23, 42, 0.5)",
       },
     },

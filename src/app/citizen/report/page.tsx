@@ -62,7 +62,7 @@ export default function ReportIncidentPage() {
 
         {/* Main card */}
         <div className="glass-panel p-6 shadow-card">
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-text-primary">
             What type of incident are you reporting ?
           </h2>
 
@@ -81,7 +81,7 @@ export default function ReportIncidentPage() {
             <div className="hidden sm:block" />
           </div>
 
-          <h3 className="mt-10 text-sm font-semibold text-white">
+          <h3 className="mt-10 text-sm font-semibold text-text-primary">
             How severe is the situation ?
           </h3>
 
@@ -99,8 +99,8 @@ export default function ReportIncidentPage() {
           <button
             className={`mt-10 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition ${
               canContinue
-                ? "bg-tealGlow text-night shadow-glow hover:bg-tealGlow/90"
-                : "bg-white/10 text-slate-500 cursor-not-allowed"
+                ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90"
+                : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
             }`}
             disabled={!canContinue}
             onClick={() => {
@@ -121,17 +121,17 @@ function StepItem({ label, active }: { label: string; active?: boolean }) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className={`h-10 w-10 rounded-full flex items-center justify-center ${
-          active ? "bg-tealGlow text-night shadow-glow" : "bg-white/10 text-slate-500"
+        className={`h-10 w-10 rounded-full flex items-center justify-center transition ${
+          active ? "bg-tealGlow text-night shadow-glow-button font-bold" : "bg-card-bg text-text-muted border border-card-border"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
       </div>
       <div className="min-w-0">
-        <p className={`text-xs font-semibold ${active ? "text-tealGlow" : "text-slate-500"}`}>
+        <p className={`text-xs font-semibold ${active ? "text-tealGlow" : "text-text-muted"}`}>
           {label}
         </p>
-        <div className="mt-2 h-[2px] w-full rounded-full bg-white/10" />
+        <div className={`mt-2 h-[2px] w-full rounded-full ${active ? "bg-tealGlow" : "bg-card-border"}`} />
       </div>
     </div>
   );
@@ -152,13 +152,13 @@ function SelectableBox({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-white/5 text-xs shadow-sm transition ${
+      className={`flex h-24 flex-col items-center justify-center gap-2 rounded-xl border text-xs shadow-sm transition ${
         selected
-          ? "border-tealGlow ring-1 ring-tealGlow/50 text-white bg-tealGlow/10"
-          : "border-white/10 hover:border-white/20 text-slateSoft hover:bg-white/10"
+          ? "border-tealGlow ring-1 ring-tealGlow/50 text-text-primary bg-tealGlow/10 font-bold"
+          : "border-card-border bg-card-bg hover:border-tealGlow/30 text-text-secondary hover:bg-card-border/10"
       }`}
     >
-      {icon ? <span className={`${selected ? "text-tealGlow" : "text-slate-400"}`}>{icon}</span> : null}
+      {icon ? <span className={`${selected ? "text-tealGlow" : "text-text-muted"}`}>{icon}</span> : null}
       <span className="font-medium">{label}</span>
     </button>
   );

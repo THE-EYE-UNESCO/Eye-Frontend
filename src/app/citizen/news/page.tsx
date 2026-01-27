@@ -88,25 +88,25 @@ export default function NewsPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
               Breaking Alert
             </p>
-            <h2 className="text-lg font-semibold text-white">{heroArticle.title}</h2>
-            <p className="text-xs text-slateSoft">{heroArticle.body}</p>
+            <h2 className="text-lg font-semibold text-text-primary">{heroArticle.title}</h2>
+            <p className="text-xs text-text-secondary">{heroArticle.body}</p>
           </div>
         </div>
 
         {/* Filters */}
         <div className="glass-panel px-5 py-3 shadow-card">
           <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="text-slateSoft">Filter by category :</span>
-            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
+            <span className="text-text-muted">Filter by category :</span>
+            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
               All News
             </button>
-            <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white shadow-glow">
+            <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white shadow-glow-red hover:opacity-90 transition">
               Breaking News
             </button>
-            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
+            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
               Updates
             </button>
-            <button className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white hover:bg-white/20 transition">
+            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
               Safety Tips
             </button>
           </div>
@@ -115,7 +115,7 @@ export default function NewsPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,0.9fr)]">
           {/* Left: Breaking news list */}
           <div className="space-y-4">
-            <p className="text-sm font-semibold text-white">Breaking News</p>
+            <p className="text-sm font-semibold text-text-primary">Breaking News</p>
 
             {breakingNews.map((item) => (
               <article
@@ -143,9 +143,9 @@ export default function NewsPage() {
                         </span>
                       ))}
                     </div>
-                    <h3 className="text-sm font-semibold text-white">{item.title}</h3>
-                    <p className="text-xs leading-relaxed text-slateSoft">{item.body}</p>
-                    <div className="mt-3 flex flex-wrap gap-4 text-[10px] text-slateSoft">
+                    <h3 className="text-sm font-semibold text-text-primary">{item.title}</h3>
+                    <p className="text-xs leading-relaxed text-text-secondary">{item.body}</p>
+                    <div className="mt-3 flex flex-wrap gap-4 text-[10px] text-text-muted">
                       <span>Location: {item.location}</span>
                       <span>{item.time}</span>
                     </div>
@@ -169,12 +169,12 @@ export default function NewsPage() {
           <div className="space-y-5">
             {/* Trending now */}
             <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-white">Trending Now</p>
-              <div className="mt-4 space-y-2 text-xs text-slateSoft">
+              <p className="text-sm font-semibold text-text-primary">Trending Now</p>
+              <div className="mt-4 space-y-2 text-xs">
                 {trendingNow.map((t, idx) => (
                   <div
                     key={idx}
-                    className="rounded-2xl bg-white/5 border border-white/5 px-4 py-3 text-slate-200"
+                    className="rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-text-primary shadow-sm transition hover:bg-card-border/10 cursor-default"
                   >
                     {t}
                   </div>
@@ -184,30 +184,30 @@ export default function NewsPage() {
 
             {/* Summary */}
             <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-white">Today&apos;s Summary</p>
-              <div className="mt-4 space-y-3 text-xs text-slate-100">
-                <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 border border-white/5">
-                  <span>Articles Published</span>
-                  <span className="font-semibold">{summary.articles}</span>
+              <p className="text-sm font-semibold text-text-primary">Today&apos;s Summary</p>
+              <div className="mt-4 space-y-3 text-xs">
+                <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 shadow-sm transition">
+                  <span className="text-text-secondary">Articles Published</span>
+                  <span className="font-semibold text-text-primary">{summary.articles}</span>
                 </div>
-                <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3">
-                  <span>Breaking Alerts</span>
-                  <span className="font-semibold">{summary.breaking}</span>
+                <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
+                  <span className="font-medium">Breaking Alerts</span>
+                  <span className="font-bold">{summary.breaking}</span>
                 </div>
-                <div className="flex items-center justify-between rounded-2xl bg-indigo-500 px-4 py-3">
-                  <span>Community Updates</span>
-                  <span className="font-semibold">{summary.updates}</span>
+                <div className="flex items-center justify-between rounded-2xl bg-indigo-500 px-4 py-3 text-white shadow-sm">
+                  <span className="font-medium">Community Updates</span>
+                  <span className="font-bold">{summary.updates}</span>
                 </div>
               </div>
             </div>
 
             {/* Subscribe */}
             <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-white">Stay Updated</p>
-              <p className="mt-2 text-xs text-slateSoft">
+              <p className="text-sm font-semibold text-text-primary">Stay Updated</p>
+              <p className="mt-2 text-xs text-text-muted">
                 Subscribe to get instant notifications for breaking news and alerts.
               </p>
-              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow hover:bg-tealGlow/90 transition">
+              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow-button hover:opacity-90 transition">
                 <Newspaper className="h-4 w-4" />
                 Subscribe To Alerts
               </button>

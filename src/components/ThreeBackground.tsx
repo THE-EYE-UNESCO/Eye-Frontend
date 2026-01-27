@@ -4,9 +4,11 @@ import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { useTheme } from "next-themes";
 
 function Particles(props: any) {
   const ref = useRef<THREE.Points>(null!);
+  const { theme } = useTheme();
   
   // Generate random points in a sphere
   const [positions, setPositions] = React.useState(() => {
@@ -32,16 +34,19 @@ function Particles(props: any) {
     }
   });
 
+  const particleColor = theme === "light" ? "#0d9488" : "#1de9e6";
+  const particleOpacity = theme === "light" ? 0.3 : 0.6;
+
   return (
     <group rotation={[0, 0, Math.PI / 4]}>
       <Points ref={ref} positions={positions} stride={3} frustumCulled={false} {...props}>
         <PointMaterial
           transparent
-          color="#1de9e6" // Teal glow color
+          color={particleColor}
           size={0.07}
           sizeAttenuation={true}
           depthWrite={false}
-          opacity={0.6}
+          opacity={particleOpacity}
         />
       </Points>
     </group>
