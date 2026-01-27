@@ -164,7 +164,7 @@ export default function Home() {
             className={`gradient-border h-full transition-all duration-500 ${isScrolled && !isManualExpand ? "rounded-full" : "rounded-3xl"}`}
             onClick={() => isScrolled && setIsManualExpand(!isManualExpand)}
           >
-            <header className={`flex h-full flex-col gap-4 border border-white/10 bg-white/5 backdrop-blur-2xl p-4 md:flex-row md:items-center md:gap-6 transition-all duration-500 ${
+            <header className={`flex h-full flex-col gap-4 border border-white/10 bg-transparent backdrop-blur-2xl p-4 md:flex-row md:items-center md:gap-6 transition-all duration-500 ${
               isScrolled && !isManualExpand 
                 ? "justify-center rounded-full cursor-pointer hover:bg-tealGlow/10 group/header overflow-hidden" 
                 : "rounded-3xl"
@@ -227,7 +227,7 @@ export default function Home() {
                             }
                           }}
                           className={`relative rounded-full px-5 py-2 text-sm font-medium transition cursor-pointer hover:text-white ${
-                            activeSection === link ? "text-tealGlow bg-white/5 shadow-sm" : ""
+                            activeSection === link ? "text-tealGlow bg-tealGlow/5 shadow-sm" : ""
                           }`}
                         >
                           {link}
@@ -241,7 +241,7 @@ export default function Home() {
 
                   <div className="hidden md:flex items-center gap-3">
                     <Link href="/login">
-                      <button className="rounded-full border border-card-border px-6 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-white/5 active:scale-95">
+                      <button className="rounded-full border border-card-border px-6 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-tealGlow/5 active:scale-95">
                         Log In
                       </button>
                     </Link>
@@ -272,7 +272,7 @@ export default function Home() {
             className={`absolute inset-0 bg-night/80 backdrop-blur-md transition-opacity duration-500 ${isMobileMenuOpen ? "opacity-100" : "opacity-0"}`}
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <aside className={`absolute right-0 top-0 h-full w-[80%] max-w-sm bg-bg-secondary border-l border-card-border transition-transform duration-500 ease-out-expo ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+          <aside className={`absolute right-0 top-0 h-full w-[80%] max-w-sm bg-night border-l border-card-border transition-transform duration-500 ease-out-expo ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
             <div className="flex flex-col h-full p-8 pt-20">
               <button 
                 className="absolute top-6 right-6 h-12 w-12 flex items-center justify-center rounded-full bg-card-bg border border-card-border text-text-primary active:scale-90"

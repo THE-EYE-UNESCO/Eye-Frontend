@@ -129,7 +129,7 @@ export function ResponderShell({
       <ThreeBackground />
 
       {/* Mobile Responder Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-bg-primary/80 backdrop-blur-xl border-b border-card-border z-[60] px-6 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-transparent backdrop-blur-xl border-b border-card-border z-[60] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-tealGlow text-night">
             <Shield className="h-5 w-5" />
