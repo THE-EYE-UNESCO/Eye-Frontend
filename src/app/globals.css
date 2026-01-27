@@ -58,9 +58,14 @@
 
   --shadow-glow: var(--shadow-glow-val);
   --shadow-glow-button: var(--shadow-glow-btn);
+  --shadow-glow-teal: 0 4px 20px rgba(43, 214, 188, 0.3);
   --shadow-glow-red: var(--shadow-glow-red);
   --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.5);
   --shadow-responder: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --breakpoint-xs: 480px;
 }
 
 body {

@@ -123,20 +123,20 @@ export default function CitizenDashboard() {
           </div>
 
           {/* Alert tags row */}
-          <div className="flex flex-wrap gap-3 border-t border-card-border bg-bg-secondary px-6 py-3 text-sm">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 border-t border-card-border bg-bg-secondary px-4 sm:px-6 py-4 text-sm">
             {alerts.map((alert) => (
               <div
                 key={alert.label}
-                className="flex flex-1 min-w-[160px] items-center justify-between rounded-2xl bg-card-bg border border-card-border px-4 py-2 shadow-sm"
+                className="flex items-center justify-between rounded-2xl bg-card-bg border border-card-border px-4 py-3 shadow-sm hover:border-tealGlow/30 transition-colors"
               >
-                <div className="space-y-0.5">
-                  <p className="text-xs font-medium text-text-primary">
+                <div className="space-y-0.5 min-w-0">
+                  <p className="text-xs font-semibold text-text-primary truncate">
                     {alert.location}
                   </p>
-                  <p className="text-[10px] text-text-muted uppercase tracking-wider">{alert.label}</p>
+                  <p className="text-[10px] text-text-muted uppercase tracking-wider truncate">{alert.label}</p>
                 </div>
                 <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white ${alert.color.replace('bg-', 'bg-opacity-90 bg-')}`} 
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white whitespace-nowrap ml-2 ${alert.color.replace('bg-', 'bg-opacity-90 bg-')}`} 
                 >
                   {alert.level}
                 </span>
@@ -218,31 +218,31 @@ export default function CitizenDashboard() {
         </div>
 
         {/* Crisis breakdown table */}
-        <div className="glass-panel px-5 py-4 text-sm text-text-secondary shadow-card">
-          <p className="text-sm font-semibold text-text-primary">
+        <div className="glass-panel px-4 sm:px-5 py-4 text-sm text-text-secondary shadow-card overflow-hidden">
+          <p className="text-sm font-semibold text-text-primary mb-4">
             Crisis Breakdown
           </p>
-          <div className="mt-3 overflow-x-auto">
-            <table className="min-w-full border-separate border-spacing-y-2 text-sm">
-              <thead className="text-xs text-text-muted uppercase tracking-wider">
+          <div className="overflow-x-auto -mx-1 px-1">
+            <table className="min-w-[600px] w-full border-separate border-spacing-y-2 text-sm">
+              <thead className="text-[10px] text-text-muted uppercase tracking-wider">
                 <tr>
-                  <th className="text-left font-medium">Crisis</th>
-                  <th className="text-left font-medium">Location</th>
-                  <th className="text-left font-medium">Date – Time</th>
-                  <th className="text-left font-medium">Status</th>
+                  <th className="text-left font-semibold px-3">Crisis</th>
+                  <th className="text-left font-semibold px-3">Location</th>
+                  <th className="text-left font-semibold px-3">Date – Time</th>
+                  <th className="text-left font-semibold px-3">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {tableRows.map((row, idx) => (
-                  <tr key={idx} className="rounded-xl bg-card-bg border border-card-border hover:bg-card-border/10 transition">
-                    <td className="rounded-l-xl px-3 py-3 text-text-primary font-medium">
+                  <tr key={idx} className="rounded-xl bg-card-bg border border-card-border hover:bg-white/5 transition-colors group">
+                    <td className="rounded-l-2xl px-3 py-4 text-text-primary font-bold">
                       {row.crisis}
                     </td>
-                    <td className="px-3 py-3 text-text-secondary">{row.location}</td>
-                    <td className="px-3 py-3 text-text-muted">{row.date}</td>
-                    <td className="rounded-r-xl px-3 py-3">
+                    <td className="px-3 py-4 text-text-secondary">{row.location}</td>
+                    <td className="px-3 py-4 text-text-muted text-xs">{row.date}</td>
+                    <td className="rounded-r-2xl px-3 py-4">
                       <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white ${row.color}`}
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-white ${row.color}`}
                       >
                         {row.status}
                       </span>
@@ -251,6 +251,9 @@ export default function CitizenDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="mt-4 md:hidden text-[10px] text-center text-text-muted italic flex items-center justify-center gap-2">
+            <span>← Swipe to see more →</span>
           </div>
         </div>
       </div>
