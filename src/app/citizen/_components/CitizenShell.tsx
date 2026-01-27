@@ -11,6 +11,7 @@ import {
   X,
   Plus,
   ArrowUp,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,7 +68,7 @@ export function CitizenShell({
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-8">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-tealGlow text-night shadow-glow-teal">
-          <LayoutDashboard className="h-5 w-5" />
+          <Eye className="h-5 w-5" />
         </div>
         <span className="text-xl font-bold tracking-widest text-tealGlow uppercase">
           THE EYE
@@ -100,10 +101,10 @@ export function CitizenShell({
       </nav>
 
       <div className="mt-auto p-4 space-y-4">
-        <div className="rounded-[28px] bg-white/5 border border-white/10 p-5 backdrop-blur-md">
+        <div className="rounded-[28px] bg-white/5 border-2 border-tealGlow/30 p-5 backdrop-blur-md">
           <p className="text-[10px] font-bold uppercase tracking-widest text-tealGlow mb-1">PRO Membership</p>
           <p className="text-sm font-bold text-text-primary mb-3">Early Warning AI</p>
-          <button className="w-full rounded-xl bg-white/10 py-2.5 text-xs font-bold text-text-primary hover:bg-white/20 transition-colors">
+          <button className="w-full rounded-xl bg-white/10 py-2.5 text-xs font-bold text-text-primary hover:bg-white/20 transition-colors border-2 border-tealGlow/40">
             Upgrade
           </button>
         </div>
@@ -111,8 +112,8 @@ export function CitizenShell({
         <Link
           href="/citizen/profile"
           onClick={() => setIsSidebarOpen(false)}
-          className={`flex items-center gap-3 rounded-2xl p-3 transition-colors ${
-            pathname === "/citizen/profile" ? "bg-white/10" : "hover:bg-white/5"
+          className={`flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 ${
+            pathname === "/citizen/profile" ? "bg-white/10 border-tealGlow/50" : "hover:bg-white/5 border-white/20"
           }`}
         >
           <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30">
@@ -141,7 +142,7 @@ export function CitizenShell({
       <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-transparent backdrop-blur-xl border-b border-card-border z-[60] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-tealGlow text-night">
-            <LayoutDashboard className="h-5 w-5" />
+            <Eye className="h-5 w-5" />
           </div>
           <span className="text-lg font-bold tracking-widest text-tealGlow">THE EYE</span>
         </div>
