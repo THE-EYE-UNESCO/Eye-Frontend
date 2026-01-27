@@ -60,6 +60,7 @@
   --shadow-glow-button: var(--shadow-glow-btn);
   --shadow-glow-red: var(--shadow-glow-red);
   --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.5);
+  --shadow-responder: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 body {

@@ -54,6 +54,14 @@ function Particles(props: any) {
 }
 
 export default function ThreeBackground() {
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="fixed inset-0 z-[-1] pointer-events-none opacity-40">
         {/* Set z-index to -1 to be behind everything */}

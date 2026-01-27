@@ -3,12 +3,12 @@
 import { Search } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { CitizenShell } from "../_components/CitizenShell";
+import { ResponderShell } from "../_components/ResponderShell";
 
 const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[360px] w-full items-center justify-center bg-card-bg">
+    <div className="flex h-[480px] w-full items-center justify-center bg-card-bg">
       <p className="text-sm text-text-muted">Loading Map...</p>
     </div>
   ),
@@ -117,7 +117,7 @@ const incidents: Incident[] = [
   },
 ];
 
-export default function CrisisMapPage() {
+export default function ResponderCrisisMapPage() {
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
   const selectedIncident = useMemo(
     () => incidents.find((i) => i.id === selectedIncidentId) ?? null,
@@ -143,7 +143,7 @@ export default function CrisisMapPage() {
   };
 
   return (
-    <CitizenShell
+    <ResponderShell
       title="Live Crisis Map"
       subtitle="Real-time visualization of emergencies in your area"
     >
@@ -178,14 +178,14 @@ export default function CrisisMapPage() {
             </div>
 
             <div className="mt-4 overflow-hidden rounded-2xl border border-card-border bg-card-bg shadow-inner">
-              <div className="relative h-[360px] w-full">
+              <div className="relative h-[480px] w-full">
                 <ClientSideMap
                   center={[-1.95, 30.06]}
                   zoom={13}
                   incidents={incidents}
                   selectedIncidentId={selectedIncidentId}
                   onIncidentClick={setSelectedIncidentId}
-                  locationLabel="Your location • Current location"
+                  locationLabel="Responder Unit Alpha • Active Tracking"
                 />
               </div>
             </div>
@@ -198,11 +198,6 @@ export default function CrisisMapPage() {
                   <span className="capitalize">{l.label}</span>
                 </div>
               ))}
-            </div>
-
-            {/* tip */}
-            <div className="mt-4 rounded-2xl bg-card-bg border border-card-border px-4 py-3 text-[11px] text-text-muted shadow-sm">
-              <span className="font-semibold text-tealGlow">Tip:</span> Click on any incident marker to view detailed information
             </div>
           </div>
         </div>
@@ -266,41 +261,40 @@ export default function CrisisMapPage() {
 
                 <div className="space-y-3">
                   <button className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-xs font-semibold text-night shadow-glow-button hover:opacity-90 transition">
-                    Get Safety Instructions
+                    Dispatch Unit
                   </button>
                   <button className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-xs font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
-                    Share This Alert
+                    View Impact Report
                   </button>
                 </div>
               </div>
             ) : (
               <p className="mt-3 text-xs text-text-muted">
-                Click on any marker on the map to view incident details.
+                Click on any marker on the map to view detailed deployment data.
               </p>
             )}
           </div>
 
           <div className="glass-panel px-5 py-5 shadow-card">
-            <p className="text-sm font-semibold text-text-primary">Map Statistics</p>
+            <p className="text-sm font-semibold text-text-primary">Response Statistics</p>
 
             <div className="mt-4 space-y-3 text-xs">
               <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-text-primary shadow-sm">
-                <span>Total Incidents</span>
-                <span className="font-bold">{incidents.length}</span>
+                <span>Active Units</span>
+                <span className="font-bold">14</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
-                <span className="font-medium">Critical</span>
-                <span className="font-bold">2</span>
+                <span className="font-medium">Critical Ops</span>
+                <span className="font-bold">3</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 text-white shadow-sm">
-                <span className="font-medium">Medium</span>
-                <span className="font-bold">2</span>
+              <div className="flex items-center justify-between rounded-2xl bg-indigo-500 px-4 py-3 text-white shadow-sm">
+                <span className="font-medium">Standby</span>
+                <span className="font-bold">8</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </CitizenShell>
+    </ResponderShell>
   );
 }
-

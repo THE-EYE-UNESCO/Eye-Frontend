@@ -210,12 +210,16 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <button className="rounded-full border border-card-border px-6 py-3 text-base font-semibold text-text-primary transition hover:bg-card-bg">
-                      Sign In
-                    </button>
-                    <button className="rounded-full bg-tealGlow px-6 py-3 text-base font-semibold text-night shadow-glow transition hover:shadow-lg">
-                      Get Started
-                    </button>
+                    <Link href="/login">
+                      <button className="rounded-full border border-card-border px-6 py-3 text-base font-semibold text-text-primary transition hover:bg-card-bg">
+                        Sign In
+                      </button>
+                    </Link>
+                    <Link href="/signup">
+                      <button className="rounded-full bg-tealGlow px-6 py-3 text-base font-semibold text-night shadow-glow transition hover:shadow-lg">
+                        Get Started
+                      </button>
+                    </Link>
                     {/* Theme Toggle Button */}
                     {mounted && (
                       <button
@@ -447,9 +451,11 @@ export default function Home() {
               />
               <p className="text-lg font-semibold text-tealGlow">THE EYE</p>
             </div>
-            <button className="rounded-full bg-tealGlow px-6 py-2 text-sm font-semibold text-night">
-              Sign Up
-            </button>
+            <Link href="/signup">
+              <button className="rounded-full bg-tealGlow px-6 py-2 text-sm font-semibold text-night">
+                Sign Up
+              </button>
+            </Link>
           </div>
 
           <div className="mt-8 grid gap-8 text-base md:grid-cols-4">
