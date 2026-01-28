@@ -164,7 +164,7 @@ export default function Home() {
             className={`gradient-border h-full transition-all duration-500 ${isScrolled && !isManualExpand ? "rounded-full" : "rounded-3xl"}`}
             onClick={() => isScrolled && setIsManualExpand(!isManualExpand)}
           >
-            <header className={`!flex !h-full !flex-row !flex-nowrap !items-center gap-4 border border-white/10 bg-transparent backdrop-blur-2xl p-4 md:gap-6 transition-all duration-500 navbar-inner w-full ${
+            <header className={`relative flex h-full flex-row items-center gap-4 border border-white/10 bg-transparent backdrop-blur-2xl p-4 md:gap-6 transition-all duration-500 border-inner ${
               isScrolled && !isManualExpand 
                 ? "justify-center rounded-full cursor-pointer hover:bg-tealGlow/10 group/header overflow-hidden" 
                 : "rounded-3xl"
@@ -210,7 +210,7 @@ export default function Home() {
 
               {(!isScrolled || isManualExpand) && (
                 <>
-                  <nav className="hidden md:flex items-center gap-1 rounded-full border border-card-border/50 px-4 py-1.5 text-sm text-text-secondary">
+                  <nav className="hidden xl:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border border-card-border/50 px-4 py-1.5 text-sm text-text-secondary">
                     {["Home", "About", "Services", "Quick Help"].map((link) => (
                       <span
                         key={link}
@@ -548,15 +548,16 @@ export default function Home() {
         {/* FOOTER */}
         <footer className="mt-12 pt-12 pb-12 text-sm text-text-muted">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between border-b border-card-border pb-12">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            <div className="flex flex-col items-center md:items-start gap-2">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-tealGlow text-night">
                   <EyeIcon className="h-6 w-6" />
                 </span>
                 <p className="text-xl font-bold tracking-widest text-tealGlow uppercase">THE EYE</p>
               </div>
-              <p className="text-sm text-text-muted max-w-xs text-center md:text-left">
-                Protecting communities through advanced AI and real-time data analysis.
+              
+              <p className="text-xs text-text-secondary/70 max-w-xs text-center md:text-left leading-relaxed">
+                Protecting communities through advanced AI <br className="hidden md:block"/> and real-time data analysis.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4">
@@ -590,14 +591,14 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-16 flex flex-col gap-6 border-t border-card-border pt-8 text-xs uppercase tracking-[0.2em] text-text-muted md:flex-row md:items-center md:justify-between">
-            <p className="text-center md:text-left">
+          <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-card-border pt-8">
+            <p className="text-[9px] uppercase tracking-[0.2em] text-text-muted text-center md:text-left">
               © {year} THE EYE . Global Crisis Management. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <Link href="#" className="hover:text-tealGlow transition-colors">Privacy Policy</Link>
-              <Link href="#" className="hover:text-tealGlow transition-colors">Terms of Service</Link>
-              <Link href="#top" className="flex items-center gap-2 rounded-full border border-card-border px-4 py-2 text-text-primary hover:border-tealGlow transition-all">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+              <Link href="#" className="text-[9px] uppercase tracking-[0.2em] font-medium text-text-secondary hover:text-tealGlow transition-colors">Privacy Policy</Link>
+              <Link href="#" className="text-[9px] uppercase tracking-[0.2em] font-medium text-text-secondary hover:text-tealGlow transition-colors">Terms of Service</Link>
+              <Link href="#top" className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-1.5 text-[9px] uppercase tracking-[0.2em] text-text-primary hover:border-tealGlow transition-all">
                 <span>Back to top</span>
                 <ArrowUp className="h-3 w-3" />
               </Link>
