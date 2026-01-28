@@ -164,12 +164,12 @@ export default function Home() {
             className={`gradient-border h-full transition-all duration-500 ${isScrolled && !isManualExpand ? "rounded-full" : "rounded-3xl"}`}
             onClick={() => isScrolled && setIsManualExpand(!isManualExpand)}
           >
-            <header className={`flex h-full flex-col gap-4 border border-white/10 bg-transparent backdrop-blur-2xl p-4 md:flex-row md:items-center md:gap-6 transition-all duration-500 ${
+            <header className={`!flex !h-full !flex-row !flex-nowrap !items-center gap-4 border border-white/10 bg-transparent backdrop-blur-2xl p-4 md:gap-6 transition-all duration-500 navbar-inner w-full ${
               isScrolled && !isManualExpand 
                 ? "justify-center rounded-full cursor-pointer hover:bg-tealGlow/10 group/header overflow-hidden" 
                 : "rounded-3xl"
             }`}>
-              <div className={`flex items-center justify-between gap-2 ${isScrolled && !isManualExpand ? "w-full px-4" : "w-full md:w-auto"}`}>
+              <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <span className={`flex flex-shrink-0 items-center justify-center rounded-full bg-tealGlow text-night transition-all duration-500 ${
                     isScrolled && !isManualExpand ? "h-8 w-8 p-0" : "h-10 w-10 md:h-12 md:w-12"
@@ -188,10 +188,10 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Mobile Menu Toggle */}
+                {/* Mobile Menu Toggle - Only visible on mobile */}
                 {(!isScrolled || isManualExpand) && (
                   <button 
-                    className="md:hidden text-text-primary p-2 hover:bg-white/10 rounded-xl transition-colors"
+                    className="md:hidden ml-auto text-text-primary p-2 hover:bg-white/10 rounded-xl transition-colors"
                     onClick={() => setIsMobileMenuOpen(true)}
                   >
                     <Menu className="h-6 w-6" />
@@ -200,7 +200,7 @@ export default function Home() {
                 
                 {isScrolled && !isManualExpand && (
                   <button 
-                    className="ml-auto text-tealGlow/40 group-hover/header:text-tealGlow transition-colors"
+                    className="md:hidden ml-auto text-tealGlow/40 group-hover/header:text-tealGlow transition-colors"
                     aria-label="Expand menu"
                   >
                     <ArrowDown className="h-4 w-4 animate-bounce" />
@@ -210,36 +210,34 @@ export default function Home() {
 
               {(!isScrolled || isManualExpand) && (
                 <>
-                  <div className="hidden md:flex flex-1 justify-center">
-                    <nav className="flex items-center gap-1 rounded-full border border-card-border/50 px-4 py-1.5 text-sm text-text-secondary">
-                      {["Home", "About", "Services", "Quick Help"].map((link) => (
-                        <span
-                          key={link}
-                          onClick={() => {
-                            if (link === "Quick Help") {
-                              setIsChatOpen(true);
-                            } else {
-                              const id = link.toLowerCase().replace(" ", "");
-                              const element = document.getElementById(id);
-                              if (element) {
-                                element.scrollIntoView({ behavior: "smooth" });
-                              }
+                  <nav className="hidden md:flex items-center gap-1 rounded-full border border-card-border/50 px-4 py-1.5 text-sm text-text-secondary">
+                    {["Home", "About", "Services", "Quick Help"].map((link) => (
+                      <span
+                        key={link}
+                        onClick={() => {
+                          if (link === "Quick Help") {
+                            setIsChatOpen(true);
+                          } else {
+                            const id = link.toLowerCase().replace(" ", "");
+                            const element = document.getElementById(id);
+                            if (element) {
+                              element.scrollIntoView({ behavior: "smooth" });
                             }
-                          }}
-                          className={`relative rounded-full px-5 py-2 text-sm font-medium transition cursor-pointer hover:text-white ${
-                            activeSection === link ? "text-tealGlow bg-tealGlow/5 shadow-sm" : ""
-                          }`}
-                        >
-                          {link}
-                          {activeSection === link && (
-                            <span className="absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-tealGlow" />
-                          )}
-                        </span>
-                      ))}
-                    </nav>
-                  </div>
+                          }
+                        }}
+                        className={`relative rounded-full px-5 py-2 text-sm font-medium transition cursor-pointer hover:text-white ${
+                          activeSection === link ? "text-tealGlow bg-tealGlow/5 shadow-sm" : ""
+                        }`}
+                      >
+                        {link}
+                        {activeSection === link && (
+                          <span className="absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-tealGlow" />
+                        )}
+                      </span>
+                    ))}
+                  </nav>
 
-                  <div className="hidden md:flex items-center gap-3">
+                  <div className="hidden md:flex items-center gap-3 ml-auto">
                     <Link href="/login">
                       <button className="rounded-full border border-card-border px-6 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-tealGlow/5 active:scale-95">
                         Log In

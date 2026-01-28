@@ -171,20 +171,13 @@ p, .subheading {
 
 .gradient-border {
   position: relative;
-  padding: 2px;
+  padding: 0;
   border-radius: 1.5rem;
-  animation: borderGlow 8s linear infinite;
+  background: transparent;
 }
 
-.gradient-border .border-inner {
+.gradient-border .navbar-inner {
   border-radius: inherit;
-}
-
-@keyframes borderGlow {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  100% {
-    filter: hue-rotate(360deg);
-  }
+  height: 100%;
+  width: 100%;
 }
