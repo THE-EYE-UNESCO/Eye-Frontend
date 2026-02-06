@@ -3,95 +3,84 @@
 import React, { useState, useEffect } from "react";
 import { 
   Users, 
-  Heart, 
+  Shield, 
   MessageSquare, 
   Share2, 
   MapPin, 
   Clock, 
-  ChevronDown,
-  XCircle
+  ChevronDown
 } from "lucide-react";
 import { ResponderShell } from "../_components/ResponderShell";
+
+import { api } from "@/lib/api";
 
 interface Report {
   id: string;
   title: string;
   description: string;
-  location: string;
-  timeAgo: string;
-  severity: "CRITICAL" | "HIGH" | "MEDIUM";
-  status: "Verified" | "Pending" | "Active";
+  landmark: string;
+  address: string;
+  created_at: string;
+  severity: string;
+  category: string;
+  status: string;
 }
 
-const mockReports: Report[] = [
-  {
-    id: "1",
-    title: "Bridge structural failure risk",
-    description: "Citizen report verified by structural sensors. Immediate closure recommended.",
-    location: "Hill District, Sector 12",
-    timeAgo: "21m ago",
-    severity: "CRITICAL",
-    status: "Verified",
-  },
-  {
-    id: "2",
-    title: "Bridge structural failure risk",
-    description: "Citizen report verified by structural sensors. Immediate closure recommended.",
-    location: "Hill District, Sector 17",
-    timeAgo: "9m ago",
-    severity: "CRITICAL",
-    status: "Verified",
-  },
-  {
-    id: "3",
-    title: "Bridge structural failure risk",
-    description: "Citizen report verified by structural sensors. Immediate closure recommended.",
-    location: "Hill District, Sector 8",
-    timeAgo: "11m ago",
-    severity: "CRITICAL",
-    status: "Verified",
-  }
-];
-
 export default function ReportedIncidentsPage() {
-  const [mounted, setMounted] = useState(false);
-  const [reports] = useState<Report[]>(mockReports);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
+    const fetchReports = async () => {
+      try {
+        const data = await api.get("/responder/reports");
+        setReports(data.reports);
+      } catch (error) {
+        console.error("Failed to fetch reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
   }, []);
 
-  if (!mounted) return null;
+  if (loading) return (
+    <ResponderShell title="Citizens Reports" subtitle="Loading latest reports...">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tealGlow"></div>
+      </div>
+    </ResponderShell>
+  );
 
   return (
     <ResponderShell
       title="Citizens Reports"
-      subtitle="Share your story, support others, and strengthen our community"
+      subtitle="Real-time citizen reports and incident verification"
     >
       <div className="space-y-8">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             label="Total Reports"
-            value="12,456"
+            value={reports.length.toString()}
             icon={<Users className="h-6 w-6" />}
             color="bg-[#7C3AED]" // Purple
           />
           <StatCard
-            label="Pending Review"
-            value="3,829"
-            icon={<Heart className="h-6 w-6" />}
+            label="Critical Ops"
+            value={reports.filter(r => r.severity === 'CRITICAL').length.toString()}
+            icon={<Shield className="h-6 w-6" />}
             color="bg-[#C04ABB]" // Pink/Magenta
           />
           <StatCard
             label="Verified"
-            value="8,945"
+            value={reports.filter(r => r.status === 'VERIFIED').length.toString()}
             icon={<MessageSquare className="h-6 w-6" />}
             color="bg-[#2563EB]" // Blue
           />
           <StatCard
             label="Active Response"
-            value="5,234"
+            value={reports.filter(r => r.status === 'IN_PROGRESS').length.toString()}
             icon={<Share2 className="h-6 w-6" />}
             color="bg-[#3F7D20]" // Green
           />
@@ -111,9 +100,15 @@ export default function ReportedIncidentsPage() {
 
         {/* Reports List */}
         <div className="space-y-6">
-          {reports.map((report) => (
-            <ReportCard key={report.id} report={report} />
-          ))}
+          {reports.length === 0 ? (
+            <div className="glass-panel p-12 text-center text-text-secondary">
+              No citizen reports found.
+            </div>
+          ) : (
+            reports.map((report) => (
+              <ReportCard key={report.id} report={report} />
+            ))
+          )}
         </div>
       </div>
     </ResponderShell>
@@ -142,57 +137,73 @@ function FilterSelect({ label }: { label: string }) {
 }
 
 function ReportCard({ report }: { report: Report }) {
+  const getTimeAgo = (date: string) => {
+    const now = new Date();
+    const then = new Date(date);
+    const diff = Math.floor((now.getTime() - then.getTime()) / 60000);
+    if (diff < 60) return `${diff}m ago`;
+    const hours = Math.floor(diff / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
+
+  const isCritical = report.severity === "CRITICAL";
+
   return (
-    <div className="group relative overflow-hidden rounded-[32px] border border-card-border bg-card-bg p-8 shadow-sm transition hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-[40px] border border-card-border bg-[#0A0F16] p-8 sm:p-10 shadow-xl transition-all hover:shadow-2xl hover:border-tealGlow/20">
       {/* Red vertical bar for Critical */}
-      {report.severity === "CRITICAL" && (
-        <div className="absolute left-0 top-0 h-full w-1 bg-red-500" />
+      {isCritical && (
+        <div className="absolute left-0 top-0 h-full w-1.5 bg-[#FF3B3B] shadow-[0_0_15px_rgba(255,59,59,0.5)]" />
       )}
       
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-4 flex-1">
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-lg bg-red-500 px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-5 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={`rounded-xl px-4 py-1.5 text-[10px] font-black tracking-widest text-white uppercase ${
+              isCritical ? "bg-[#FF3B3B]" : "bg-orange-500"
+            }`}>
               {report.severity}
             </span>
-            <span className="rounded-lg bg-red-100 dark:bg-red-900/40 px-3 py-1 text-[10px] font-bold text-red-600 dark:text-red-400 capitalize">
-              {report.status}
+            <span className="rounded-xl bg-[#2D1B1B] px-4 py-1.5 text-[10px] font-black tracking-widest text-[#FF4D4D] uppercase border border-[#FF3B3B]/10">
+              {report.status === 'VERIFIED' ? 'Verified' : 'Pending'}
             </span>
           </div>
 
-          <h3 className="text-xl font-bold text-text-primary group-hover:underline cursor-pointer decoration-2 underline-offset-4">
+          <h3 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight decoration-2 underline-offset-8 group-hover:underline cursor-pointer">
             {report.title}
           </h3>
           
-          <p className="text-sm leading-relaxed text-text-secondary max-w-2xl">
+          <p className="text-sm sm:text-base leading-relaxed text-[#94A3B8] max-w-3xl">
             {report.description}
           </p>
 
-          <div className="flex flex-wrap items-center gap-6 text-[11px] text-text-muted">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 opacity-50 text-tealGlow" />
-              <span>{report.location}</span>
+          <div className="flex flex-wrap items-center gap-8 text-[11px] font-bold text-[#64748B] tracking-tight">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-tealGlow" />
+              <span>{report.landmark || report.address}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 opacity-50" />
-              <span>{report.timeAgo}</span>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span>{getTimeAgo(report.created_at)}</span>
             </div>
           </div>
         </div>
 
-        <button className="rounded-xl bg-[#2563EB] px-8 py-2.5 text-xs font-bold text-white shadow-md hover:bg-blue-600 transition self-start md:self-center">
+        <button className="rounded-2xl bg-[#3B82F6] px-10 py-4 text-sm font-black text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-[#2563EB] hover:scale-105 active:scale-95 transition-all self-start md:self-center">
           Respond
         </button>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-card-border flex items-center gap-4">
-        <span className="text-[11px] font-bold text-text-primary uppercase tracking-tight">Quick Actions:</span>
-        <button className="rounded-lg bg-bg-secondary px-4 py-2 text-[11px] font-semibold text-text-primary border border-card-border hover:bg-card-border/10 transition">
-          Mark Verified
-        </button>
-        <button className="rounded-lg bg-bg-secondary px-4 py-2 text-[11px] font-semibold text-text-primary border border-card-border hover:bg-card-border/10 transition">
-          Start Response
-        </button>
+      <div className="mt-10 pt-8 border-t border-white/5 flex flex-wrap items-center gap-6">
+        <span className="text-[12px] font-black text-text-primary uppercase tracking-widest">Quick Actions:</span>
+        <div className="flex flex-wrap gap-3">
+          <button className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors">
+            Mark Verified
+          </button>
+          <button className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors">
+            Start Response
+          </button>
+        </div>
       </div>
     </div>
   );

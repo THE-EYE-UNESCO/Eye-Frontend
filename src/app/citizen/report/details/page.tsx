@@ -7,6 +7,37 @@ import { useRouter } from "next/navigation";
 
 export default function ReportDetailsPage() {
   const router = useRouter();
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [affectedPeople, setAffectedPeople] = React.useState("");
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem("reportData");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.title) setTitle(data.title);
+        if (data.description) setDescription(data.description);
+        if (data.affectedPeople) setAffectedPeople(data.affectedPeople);
+      } catch (e) {
+        console.error("Error loading report data", e);
+      }
+    }
+  }, []);
+
+  const handleContinue = () => {
+    const current = JSON.parse(localStorage.getItem("reportData") || "{}");
+    localStorage.setItem("reportData", JSON.stringify({
+      ...current,
+      title,
+      description,
+      affectedPeople
+    }));
+    router.push("/citizen/report/location");
+  };
+
+  const canContinue = title.trim().length > 0 && description.trim().length > 0;
+
   return (
     <CitizenShell
       title="Report Incident"
@@ -35,6 +66,8 @@ export default function ReportDetailsPage() {
                 Brief Title *
               </label>
               <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full rounded-xl border border-card-border bg-card-bg px-4 py-3 text-xs text-text-primary placeholder:text-text-muted focus:border-tealGlow/50 focus:outline-none transition shadow-sm"
                 placeholder="e.g Road blocked by fallen tree near Main Street..."
               />
@@ -46,6 +79,8 @@ export default function ReportDetailsPage() {
               </label>
               <div className="rounded-xl border border-card-border bg-card-bg p-3 shadow-sm">
                 <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="h-28 w-full resize-none bg-transparent text-xs text-text-primary placeholder:text-text-muted focus:outline-none"
                   placeholder={`Describe what you're observing. Include details like:
 - What exactly is happening?
@@ -61,6 +96,8 @@ export default function ReportDetailsPage() {
                 Number of people affected (if known)
               </label>
               <input
+                value={affectedPeople}
+                onChange={(e) => setAffectedPeople(e.target.value)}
                 className="w-full rounded-xl border border-card-border bg-card-bg px-4 py-3 text-xs text-text-primary placeholder:text-text-muted focus:border-tealGlow/50 focus:outline-none transition shadow-sm"
                 placeholder="Approximate number"
               />
@@ -71,14 +108,27 @@ export default function ReportDetailsPage() {
             <button
               type="button"
               className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm font-semibold text-text-secondary sm:w-40 hover:bg-card-border/20 transition"
-              onClick={() => router.back()}
+              onClick={() => {
+                // Save current state before going back
+                const current = JSON.parse(localStorage.getItem("reportData") || "{}");
+                localStorage.setItem("reportData", JSON.stringify({
+                  ...current,
+                  title,
+                  description,
+                  affectedPeople
+                }));
+                router.back();
+              }}
             >
               Back
             </button>
             <button
               type="button"
-              className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow-button hover:opacity-90 transition sm:w-40"
-              onClick={() => router.push("/citizen/report/location")}
+              disabled={!canContinue}
+              className={`w-full rounded-2xl px-4 py-3 text-sm font-semibold transition sm:w-40 ${
+                canContinue ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90" : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
+              }`}
+              onClick={handleContinue}
             >
               Continue
             </button>

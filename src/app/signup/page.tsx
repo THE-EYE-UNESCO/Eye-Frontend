@@ -7,13 +7,44 @@ import { Eye, Sparkles, Shield, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import ThreeBackground from "@/components/ThreeBackground";
+import { api } from "@/lib/api";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [formData, setFormData] = React.useState({
+    name: "",
+    email: "",
+    address: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/login");
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.register({
+        name: formData.name,
+        email: formData.email,
+        address: formData.address,
+        password: formData.password,
+        role: "CITIZEN"
+      });
+      router.push("/login?signup=success");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,6 +95,9 @@ export default function SignupPage() {
               <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
               <input
                 type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
                 placeholder="John Doe"
               />
@@ -73,8 +107,23 @@ export default function SignupPage() {
               <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
               <input
                 type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
                 placeholder="john@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Residential Address</label>
+              <input
+                type="text"
+                required
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
+                placeholder="Kigali, Rwanda"
               />
             </div>
 
@@ -82,6 +131,9 @@ export default function SignupPage() {
               <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
               <input
                 type="password"
+                required
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
                 placeholder="••••••••"
               />
@@ -91,6 +143,9 @@ export default function SignupPage() {
               <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm Password</label>
               <input
                 type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition"
                 placeholder="••••••••"
               />
@@ -107,11 +162,18 @@ export default function SignupPage() {
               </label>
             </div>
 
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full rounded-xl bg-slate-900 py-4 text-sm font-bold text-white shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:shadow-slate-900/30 hover:scale-[1.02] transition-all duration-200"
+              disabled={loading}
+              className={`w-full rounded-xl bg-slate-900 py-4 text-sm font-bold text-white shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:shadow-slate-900/30 hover:scale-[1.02] transition-all duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 

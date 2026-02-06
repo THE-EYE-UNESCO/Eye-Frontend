@@ -42,6 +42,31 @@ export default function ReportIncidentPage() {
   const [incidentType, setIncidentType] = useState<IncidentType | null>(null);
   const [severity, setSeverity] = useState<Severity | null>(null);
 
+  React.useEffect(() => {
+    const saved = localStorage.getItem("reportData");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.category) setIncidentType(data.category);
+        if (data.severity) setSeverity(data.severity);
+      } catch (e) {
+        console.error("Error loading report data", e);
+      }
+    }
+  }, []);
+
+  const handleContinue = () => {
+    if (incidentType && severity) {
+      const current = JSON.parse(localStorage.getItem("reportData") || "{}");
+      localStorage.setItem("reportData", JSON.stringify({
+        ...current,
+        category: incidentType,
+        severity: severity
+      }));
+      router.push("/citizen/report/details");
+    }
+  };
+
   const canContinue = useMemo(() => Boolean(incidentType && severity), [incidentType, severity]);
 
   return (
@@ -103,11 +128,7 @@ export default function ReportIncidentPage() {
                 : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
             }`}
             disabled={!canContinue}
-            onClick={() => {
-              if (!canContinue) return;
-              // In a real app we would persist the selections (context, URL params, etc.).
-              router.push("/citizen/report/details");
-            }}
+            onClick={handleContinue}
           >
             Continue
           </button>

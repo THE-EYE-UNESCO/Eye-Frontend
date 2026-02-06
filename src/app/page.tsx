@@ -368,7 +368,7 @@ export default function Home() {
               <div
                 className="rounded-full bg-card-bg p-8 md:p-12 shadow-xl flex items-center justify-center border border-card-border relative z-10"
                 style={{ 
-                  boxShadow: theme === "dark" 
+                  boxShadow: mounted && theme === "dark" 
                     ? "0 0 60px 10px var(--color-tealGlow), 0 0 0 10px var(--color-bg-secondary)" 
                     : "0 0 40px 5px var(--color-tealGlow), 0 0 0 8px var(--color-bg-secondary)" 
                 }}

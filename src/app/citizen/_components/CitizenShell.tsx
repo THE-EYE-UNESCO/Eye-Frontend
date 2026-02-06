@@ -12,10 +12,11 @@ import {
   Plus,
   ArrowUp,
   Eye,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import ThreeBackground from "@/components/ThreeBackground";
 
@@ -30,6 +31,33 @@ export function CitizenShell({
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Error parsing user data", e);
+        }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const nav = [
     {
@@ -51,6 +79,11 @@ export function CitizenShell({
       label: "Report Incident",
       href: "/citizen/report",
       icon: <AlertTriangle className="h-4 w-4" />,
+    },
+    {
+      label: "My Reports",
+      href: "/citizen/my-reports",
+      icon: <FileText className="h-4 w-4" />,
     },
     {
       label: "News",
@@ -116,18 +149,22 @@ export function CitizenShell({
             pathname === "/citizen/profile" ? "bg-white/10 border-tealGlow/50" : "hover:bg-white/5 border-white/20"
           }`}
         >
-          <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30">
-            <Image
-              src="/profile.png"
-              alt="Avatar"
-              width={40}
-              height={40}
-              className="h-full w-full object-cover"
-            />
+          <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30 bg-card-bg flex items-center justify-center">
+            {user?.avatar ? (
+              <Image
+                src={user.avatar}
+                alt="Avatar"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Users className="h-5 w-5 text-tealGlow/40" />
+            )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-bold text-text-primary">Dianah Iranzi</p>
-            <p className="truncate text-[10px] text-text-muted">Citizen Level 4</p>
+            <p className="truncate text-xs font-bold text-text-primary">{user?.name || "Citizen"}</p>
+            <p className="truncate text-[10px] text-text-muted">{user?.email || "Citizen Level 4"}</p>
           </div>
         </Link>
       </div>

@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Bell, CalendarDays, CheckCircle2, Share2 } from "lucide-react";
 import { ResponderShell } from "../_components/ResponderShell";
+import { api } from "@/lib/api";
 
 type Severity = "Critical" | "High" | "Medium" | "Low";
 
@@ -15,49 +16,6 @@ type AlertItem = {
   delivery: Array<"App" | "SMS" | "WhatsApp" | "IVR">;
   acknowledged: boolean;
 };
-
-const initialAlerts: AlertItem[] = [
-  {
-    id: "a1",
-    title: "Wildfire spreading near Forest Park",
-    message:
-      "HIGH: Fire spread detected near Forest Park. Avoid the area and follow evacuation guidance if instructed.",
-    severity: "Critical",
-    createdAgo: "about 3 hours ago",
-    delivery: ["App", "SMS", "WhatsApp", "IVR"],
-    acknowledged: false,
-  },
-  {
-    id: "a2",
-    title: "Flash flood warning in River Valley",
-    message:
-      "HIGH: Flash flood warning in River Valley. Move to higher ground. Avoid basement areas.",
-    severity: "Critical",
-    createdAgo: "about 3 hours ago",
-    delivery: ["App", "SMS"],
-    acknowledged: true,
-  },
-  {
-    id: "a3",
-    title: "Flash flood warning in River Valley",
-    message:
-      "HIGH: Flash flood warning in River Valley. Move to higher ground. Avoid basement areas.",
-    severity: "Critical",
-    createdAgo: "about 3 hours ago",
-    delivery: ["App", "WhatsApp"],
-    acknowledged: true,
-  },
-  {
-    id: "a4",
-    title: "Flash flood warning in River Valley",
-    message:
-      "HIGH: Flash flood warning in River Valley. Move to higher ground. Avoid basement areas.",
-    severity: "Critical",
-    createdAgo: "about 3 hours ago",
-    delivery: ["IVR"],
-    acknowledged: true,
-  },
-];
 
 function severityBadge(severity: Severity) {
   switch (severity) {
@@ -73,14 +31,45 @@ function severityBadge(severity: Severity) {
 }
 
 export default function ResponderAlertsPage() {
-  const [alerts, setAlerts] = useState<AlertItem[]>(initialAlerts);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<Severity | "All">("All");
   const [showAcknowledged, setShowAcknowledged] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const fetchReports = async () => {
+      try {
+        const data = await api.get("/responder/reports");
+        const mappedAlerts: AlertItem[] = data.reports.map((r: any) => ({
+          id: r.id,
+          title: r.title,
+          message: r.description,
+          severity: (r.severity.charAt(0).toUpperCase() + r.severity.slice(1).toLowerCase()) as Severity,
+          createdAgo: getTimeAgo(r.created_at),
+          delivery: ["App", "SMS"], // Simulation
+          acknowledged: r.status === 'RESOLVED'
+        }));
+        setAlerts(mappedAlerts);
+      } catch (error) {
+        console.error("Failed to fetch reports for alerts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
   }, []);
+
+  const getTimeAgo = (date: string) => {
+    const now = new Date();
+    const then = new Date(date);
+    const diff = Math.floor((now.getTime() - then.getTime()) / 60000);
+    if (diff < 60) return `${diff}m ago`;
+    const hours = Math.floor(diff / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
 
   const counts = useMemo(() => {
     const total = alerts.length;

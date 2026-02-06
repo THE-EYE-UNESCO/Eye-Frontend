@@ -1,9 +1,11 @@
 "use client";
 
-import { Bell, MessageCircle, Phone } from "lucide-react";
+import { Bell, MessageCircle, Phone, FileText } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CitizenShell } from "./_components/CitizenShell";
+import { api } from "@/lib/api";
 
 const alerts = [
   {
@@ -26,20 +28,15 @@ const alerts = [
   },
 ];
 
-const stories = [
-  {
-    title: "Community Comes Together In Crisis",
-    subtitle:
-      "Neighbors Helping Neighbors – The True Spirit Of Our Community Shines.",
-    image: "/sample-crisis-ex.png",
-  },
-  {
-    title: "Volunteers Coordinate Rapid Response",
-    subtitle:
-      "Local teams organize supplies and support within minutes of alerts.",
-    image: "/sample-crisis-ex.png",
-  },
-];
+interface Story {
+  id: string;
+  author_name: string;
+  title: string;
+  body: string;
+  image_url?: string;
+  tag?: string;
+  created_at: string;
+}
 
 const tableRows = [
   {
@@ -80,6 +77,23 @@ const safety = [
 ];
 
 export default function CitizenDashboard() {
+  const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const data = await api.get("/stories");
+        setStories(data.stories.slice(0, 2)); // Show latest 2 on dashboard
+      } catch (error) {
+        console.error("Error fetching stories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStories();
+  }, []);
+
   return (
     <CitizenShell
       title={
@@ -151,32 +165,51 @@ export default function CitizenDashboard() {
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <p className="font-semibold text-text-primary">Community Stories</p>
-              <button className="text-sm text-tealGlow hover:opacity-80 transition font-medium">
+              <Link href="/citizen/community" className="text-sm text-tealGlow hover:opacity-80 transition font-medium">
                 View all →
-              </button>
+              </Link>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {stories.map((story) => (
+              {loading ? (
+                Array(2).fill(0).map((_, i) => (
+                  <div key={i} className="h-48 rounded-2xl bg-card-bg border border-card-border animate-pulse" />
+                ))
+              ) : stories.map((story) => (
                 <article
-                  key={story.title}
-                  className="overflow-hidden rounded-2xl bg-card-bg border border-card-border shadow-sm hover:border-tealGlow/30 transition"
+                  key={story.id}
+                  className="overflow-hidden rounded-2xl bg-card-bg border border-card-border shadow-sm hover:border-tealGlow/30 transition flex flex-col"
                 >
-                  <div className="relative h-32 w-full">
-                    <Image
-                      src={story.image}
-                      alt={story.title}
-                      fill
-                      className="object-cover"
-                    />
+                  <div className="relative h-32 w-full bg-card-border/10">
+                    {story.image_url ? (
+                      <Image
+                        src={story.image_url}
+                        alt={story.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-text-muted">
+                        <MessageCircle className="h-8 w-8 opacity-20" />
+                      </div>
+                    )}
                   </div>
-                  <div className="space-y-2 px-4 py-3">
-                    <h3 className="text-sm font-semibold text-text-primary leading-snug">
+                  <div className="space-y-1.5 px-4 py-3 flex-grow">
+                    <div className="flex items-center justify-between text-[10px] text-tealGlow font-bold uppercase tracking-wider mb-1">
+                      <span>{story.tag || "Community"}</span>
+                      <span className="text-text-muted font-medium">{new Date(story.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <h3 className="text-sm font-semibold text-text-primary leading-snug line-clamp-1">
                       {story.title}
                     </h3>
-                    <p className="text-xs text-text-secondary">{story.subtitle}</p>
+                    <p className="text-xs text-text-secondary line-clamp-2">{story.body}</p>
                   </div>
                 </article>
               ))}
+              {!loading && stories.length === 0 && (
+                <div className="col-span-2 rounded-2xl border border-dashed border-card-border p-8 text-center">
+                  <p className="text-xs text-text-muted italic">No community stories shared yet.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -189,12 +222,19 @@ export default function CitizenDashboard() {
                   icon={<MessageCircle className="h-4 w-4" />}
                   label="Report Incident"
                   primary
+                  href="/citizen/report"
+                />
+                <ActionButton
+                   icon={<FileText className="h-4 w-4" />}
+                   label="View My Reports"
+                   href="/citizen/my-reports"
                 />
                 <ActionButton
                   icon={<Phone className="h-4 w-4" />}
                   label="Emergency Contacts"
+                  href="/citizen/emergency"
                 />
-                <ActionButton icon={<Bell className="h-4 w-4" />} label="IVR" />
+                <ActionButton icon={<Bell className="h-4 w-4" />} label="IVR" href="/citizen/ivr" />
               </div>
             </div>
 
@@ -265,22 +305,38 @@ function ActionButton({
   icon,
   label,
   primary,
+  href,
 }: {
   icon: React.ReactNode;
   label: string;
   primary?: boolean;
+  href?: string;
 }) {
-  return (
-    <button
-      className={`flex w-full items-center justify-between rounded-2xl px-3 py-3 transition hover:scale-[1.02] ${
-        primary ? "bg-tealGlow text-night font-semibold shadow-glow-button" : "bg-card-bg hover:bg-card-border/20 text-text-primary border border-card-border"
-      }`}
-    >
+  const content = (
+    <>
       <span className="flex items-center gap-2 text-xs">
         {icon}
         <span>{label}</span>
       </span>
       <span className={`text-[10px] ${primary ? "text-night/70" : "text-text-muted"}`}>→</span>
+    </>
+  );
+
+  const className = `flex w-full items-center justify-between rounded-2xl px-3 py-3 transition hover:scale-[1.02] ${
+    primary ? "bg-tealGlow text-night font-semibold shadow-glow-button" : "bg-card-bg hover:bg-card-border/20 text-text-primary border border-card-border"
+  }`;
+
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button className={className}>
+      {content}
     </button>
   );
 }

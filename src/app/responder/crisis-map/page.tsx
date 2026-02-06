@@ -14,117 +14,70 @@ const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
   ),
 });
 
-const legend = [
-  { label: "Landslide", color: "bg-red-500", dot: "#ef4444" },
-  { label: "Flood", color: "bg-blue-500", dot: "#3b82f6" },
-  { label: "Wildfire", color: "bg-orange-500", dot: "#f97316" },
-  { label: "Earthquake", color: "bg-purple-500", dot: "#a855f7" },
-  { label: "pandemic", color: "bg-cyan-400", dot: "#22d3ee" },
-  { label: "Infrastructure", color: "bg-amber-700", dot: "#b45309" },
-];
+import { api } from "@/lib/api";
 
 type Incident = {
   id: string;
   title: string;
   description: string;
-  severity: "Low" | "Medium" | "High" | "Critical";
-  category: (typeof legend)[number]["label"];
+  severity: string;
+  category: string;
   locationLabel: string;
   affectedRadiusKm: number;
-  status: "Active" | "Resolved";
+  status: string;
   coords: [number, number];
   color: string;
 };
 
-const incidents: Incident[] = [
-  {
-    id: "pandemic-1",
-    title: "Disease cluster detected – North Sector",
-    description:
-      "AI analysis detected unusual pattern of respiratory illness reports. Vaccination gap identified.",
-    severity: "Medium",
-    category: "pandemic",
-    locationLabel: "North Sector, Districts 8-12",
-    affectedRadiusKm: 3.6,
-    status: "Active",
-    coords: [-1.955, 30.065],
-    color: "#22d3ee",
-  },
-  {
-    id: "landslide-1",
-    title: "Slope failure reported – Hill District",
-    description:
-      "Multiple reports of ground movement and blocked roadways. Avoid Route 12 and follow evacuation guidance.",
-    severity: "Critical",
-    category: "Landslide",
-    locationLabel: "Hill District, Sector 3",
-    affectedRadiusKm: 2.5,
-    status: "Active",
-    coords: [-1.941, 30.059],
-    color: "#ef4444",
-  },
-  {
-    id: "flood-1",
-    title: "Rising water levels – Riverbank Zone",
-    description:
-      "Water levels increasing rapidly after heavy rainfall. Low-lying homes at risk of flooding.",
-    severity: "High",
-    category: "Flood",
-    locationLabel: "Riverbank Zone, Block A",
-    affectedRadiusKm: 1.8,
-    status: "Active",
-    coords: [-1.94, 30.07],
-    color: "#3b82f6",
-  },
-  {
-    id: "wildfire-1",
-    title: "Brush fire detected – East Park",
-    description:
-      "Thermal anomaly detected. Smoke reported by nearby residents. Keep distance and report spread.",
-    severity: "Medium",
-    category: "Wildfire",
-    locationLabel: "East Park, Ridge Line",
-    affectedRadiusKm: 4.2,
-    status: "Active",
-    coords: [-1.95, 30.05],
-    color: "#f97316",
-  },
-  {
-    id: "quake-1",
-    title: "Minor seismic activity – Central Ward",
-    description:
-      "Sensors recorded light tremors. Inspect structures and follow official updates if aftershocks occur.",
-    severity: "Low",
-    category: "Earthquake",
-    locationLabel: "Central Ward",
-    affectedRadiusKm: 6.0,
-    status: "Active",
-    coords: [-1.96, 30.08],
-    color: "#a855f7",
-  },
-  {
-    id: "infra-1",
-    title: "Bridge damage reported – South Crossing",
-    description:
-      "Structural damage suspected. Avoid heavy vehicles and use alternate crossings until inspected.",
-    severity: "Medium",
-    category: "Infrastructure",
-    locationLabel: "South Crossing, Route 4",
-    affectedRadiusKm: 1.2,
-    status: "Active",
-    coords: [-1.948, 30.048],
-    color: "#b45309",
-  },
+const legend = [
+  { label: "Landslide", color: "bg-red-500", dot: "#ef4444" },
+  { label: "Flood", color: "bg-blue-500", dot: "#3b82f6" },
+  { label: "Wildfire", color: "bg-orange-500", dot: "#f97316" },
+  { label: "Earthquake", color: "bg-purple-500", dot: "#a855f7" },
+  { label: "Pandemic", color: "bg-cyan-400", dot: "#22d3ee" },
+  { label: "Infrastructure", color: "bg-amber-700", dot: "#b45309" },
 ];
 
 export default function ResponderCrisisMapPage() {
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const data = await api.get("/responder/reports");
+        setReports(data.reports);
+      } catch (error) {
+        console.error("Failed to fetch reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, []);
+
+  const mappedIncidents = useMemo(() => {
+    return reports.map(r => ({
+      id: r.id,
+      title: r.title,
+      description: r.description,
+      severity: r.severity.charAt(0).toUpperCase() + r.severity.slice(1).toLowerCase(),
+      category: r.category.charAt(0).toUpperCase() + r.category.slice(1).toLowerCase(),
+      locationLabel: r.landmark || r.address || 'Unknown',
+      affectedRadiusKm: 2.0, // Default for now
+      status: r.status === 'PENDING' ? 'Active' : 'Resolved',
+      coords: [r.latitude, r.longitude] as [number, number],
+      color: legend.find(l => l.label.toLowerCase() === r.category.toLowerCase())?.dot || "#94a3b8"
+    }));
+  }, [reports]);
+
   const selectedIncident = useMemo(
-    () => incidents.find((i) => i.id === selectedIncidentId) ?? null,
-    [selectedIncidentId]
+    () => mappedIncidents.find((i) => i.id === selectedIncidentId) ?? null,
+    [mappedIncidents, selectedIncidentId]
   );
 
-  const severityChipClass = (severity: Incident["severity"]) => {
+  const severityChipClass = (severity: string) => {
     switch (severity) {
       case "Critical":
         return "bg-red-500 text-white";
@@ -134,11 +87,13 @@ export default function ResponderCrisisMapPage() {
         return "bg-amber-400 text-white";
       case "Low":
         return "bg-emerald-500 text-white";
+      default:
+        return "bg-gray-500 text-white";
     }
   };
 
-  const categoryChipClass = (category: Incident["category"]) => {
-    const match = legend.find((l) => l.label === category);
+  const categoryChipClass = (category: string) => {
+    const match = legend.find((l) => l.label.toLowerCase() === category.toLowerCase());
     return match?.color ?? "bg-slate-200 text-slate-700";
   };
 
@@ -182,7 +137,7 @@ export default function ResponderCrisisMapPage() {
                 <ClientSideMap
                   center={[-1.95, 30.06]}
                   zoom={13}
-                  incidents={incidents}
+                  incidents={mappedIncidents}
                   selectedIncidentId={selectedIncidentId}
                   onIncidentClick={setSelectedIncidentId}
                   locationLabel="Responder Unit Alpha • Active Tracking"

@@ -10,6 +10,32 @@ export default function ReportLocationPage() {
   const [preciseLocation, setPreciseLocation] = useState("");
   const [landmark, setLandmark] = useState("");
 
+  React.useEffect(() => {
+    const saved = localStorage.getItem("reportData");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.address) setPreciseLocation(data.address);
+        if (data.landmark) setLandmark(data.landmark);
+      } catch (e) {
+        console.error("Error loading report data", e);
+      }
+    }
+  }, []);
+
+  const handleContinue = () => {
+    const current = JSON.parse(localStorage.getItem("reportData") || "{}");
+    localStorage.setItem("reportData", JSON.stringify({
+      ...current,
+      address: preciseLocation,
+      landmark: landmark,
+      // Mock coordinates for now as requested by typical schema
+      latitude: -1.9441, 
+      longitude: 30.0619
+    }));
+    router.push("/citizen/report/evidence");
+  };
+
   const canSubmit = useMemo(() => Boolean(preciseLocation.trim()), [preciseLocation]);
 
   return (
@@ -50,8 +76,7 @@ export default function ReportLocationPage() {
                 type="button"
                 className="h-[44px] w-full rounded-xl bg-tealGlow/10 border border-tealGlow/20 px-4 text-xs font-semibold text-tealGlow hover:bg-tealGlow/20 transition shadow-sm"
                 onClick={() => {
-                  // Placeholder – could use navigator.geolocation in a later step
-                  setPreciseLocation("Current location (auto)");
+                  setPreciseLocation("Kigali, Rwanda");
                 }}
               >
                 Use My Location
@@ -84,7 +109,15 @@ export default function ReportLocationPage() {
             <button
               type="button"
               className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm font-semibold text-text-muted sm:w-40 hover:bg-card-border/10 transition"
-              onClick={() => router.back()}
+              onClick={() => {
+                const current = JSON.parse(localStorage.getItem("reportData") || "{}");
+                localStorage.setItem("reportData", JSON.stringify({
+                  ...current,
+                  address: preciseLocation,
+                  landmark: landmark
+                }));
+                router.back();
+              }}
             >
               Back
             </button>
@@ -94,12 +127,9 @@ export default function ReportLocationPage() {
                 canSubmit ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90" : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
               }`}
               disabled={!canSubmit}
-              onClick={() => {
-                if (!canSubmit) return;
-                router.push("/citizen/report/evidence");
-              }}
+              onClick={handleContinue}
             >
-              Submit
+              Continue
             </button>
           </div>
         </div>
