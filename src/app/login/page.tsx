@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation";
 import ThreeBackground from "@/components/ThreeBackground";
 import { api } from "@/lib/api";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const signupSuccess = searchParams.get("signup") === "success";
@@ -169,5 +170,20 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="text-white text-xl animate-pulse flex flex-col items-center">
+          <Eye className="h-12 w-12 text-tealGlow mb-4 animate-bounce" />
+          Loading...
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
