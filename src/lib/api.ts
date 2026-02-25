@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://eye-backend-usiu.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const api = {
   async post(endpoint: string, data: any) {
@@ -7,8 +7,15 @@ export const api = {
       'Content-Type': 'application/json',
     };
 
+    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (user?.id) {
+      headers['x-test-user-id'] = user.id;
+      headers['x-test-user-role'] = user.role || 'CITIZEN';
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -17,9 +24,17 @@ export const api = {
       body: JSON.stringify(data),
     });
 
-    const result = await response.json();
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+    } else {
+        const text = await response.text();
+        throw new Error(`Server error (${response.status}): ${text.substring(0, 100)}`);
+    }
 
     if (!response.ok) {
+
       throw new Error(result.message || 'Something went wrong');
     }
 
@@ -30,8 +45,15 @@ export const api = {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const headers: Record<string, string> = {};
 
+    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (user?.id) {
+      headers['x-test-user-id'] = user.id;
+      headers['x-test-user-role'] = user.role || 'CITIZEN';
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -39,7 +61,14 @@ export const api = {
       headers,
     });
 
-    const result = await response.json();
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+    } else {
+        const text = await response.text();
+        throw new Error(`Server error (${response.status}): ${text.substring(0, 100)}`);
+    }
 
     if (!response.ok) {
       throw new Error(result.message || 'Something went wrong');
@@ -52,8 +81,15 @@ export const api = {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const headers: Record<string, string> = {};
 
+    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (user?.id) {
+      headers['x-test-user-id'] = user.id;
+      headers['x-test-user-role'] = user.role || 'CITIZEN';
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -61,7 +97,14 @@ export const api = {
       headers,
     });
 
-    const result = await response.json();
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+    } else {
+        const text = await response.text();
+        throw new Error(`Server error (${response.status}): ${text.substring(0, 100)}`);
+    }
 
     if (!response.ok) {
       throw new Error(result.message || 'Something went wrong');
@@ -76,8 +119,15 @@ export const api = {
       'Content-Type': 'application/json',
     };
 
+    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (user?.id) {
+      headers['x-test-user-id'] = user.id;
+      headers['x-test-user-role'] = user.role || 'CITIZEN';
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -86,7 +136,14 @@ export const api = {
       body: JSON.stringify(data),
     });
 
-    const result = await response.json();
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+    } else {
+        const text = await response.text();
+        throw new Error(`Server error (${response.status}): ${text.substring(0, 100)}`);
+    }
 
     if (!response.ok) {
       throw new Error(result.message || 'Something went wrong');
