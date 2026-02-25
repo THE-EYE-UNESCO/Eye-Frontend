@@ -36,7 +36,8 @@ export default function ReportDetailsPage() {
     router.push("/citizen/report/location");
   };
 
-  const canContinue = title.trim().length > 0 && description.trim().length > 0;
+  const canContinue = title.trim().length > 0 && description.trim().length >= 10;
+
 
   return (
     <CitizenShell
@@ -88,6 +89,14 @@ export default function ReportDetailsPage() {
 - Is anyone injured or in danger?
 - Are there any immediate hazards?`}
                 />
+              </div>
+              <div className="flex justify-between mt-1">
+                <p className={`text-[10px] ${description.length < 10 ? 'text-red-500' : 'text-text-muted'}`}>
+                  {description.length < 10 ? 'Description must be at least 10 characters' : 'Enter a detailed description'}
+                </p>
+                <p className="text-[10px] text-text-muted">
+                  {description.length} / 2000
+                </p>
               </div>
             </div>
 
