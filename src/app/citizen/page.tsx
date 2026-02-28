@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CitizenShell } from "./_components/CitizenShell";
 import { api } from "@/lib/api";
+import ImageCarousel from "@/components/ImageCarousel";
 
 const alerts = [
   {
@@ -25,6 +26,33 @@ const alerts = [
     level: "Medium",
     location: "Musanze - Rwanda",
     color: "bg-yellow-400",
+  },
+];
+
+const carouselSlides = [
+  {
+    id: "1",
+    image: "/sample-crisis.png",
+    title: "Firefighters Contain Forest Park Wildfire",
+    description: "Fire crews working around the clock have successfully established firebreaks. Evacuation orders remain in effect for zone MN-65.",
+    alertType: "Weather Alert",
+    alertColor: "bg-red-600",
+  },
+  {
+    id: "2",
+    image: "/sample-crisis-ex.png",
+    title: "Flash Flood Warning in Northern Province",
+    description: "Heavy rainfall causing rapid water level rise. Residents advised to move to higher ground immediately.",
+    alertType: "Flood Alert",
+    alertColor: "bg-blue-600",
+  },
+  {
+    id: "3",
+    image: "/community1.png",
+    title: "Landslide Risk Assessment Complete",
+    description: "Geological survey identifies high-risk zones. Emergency teams on standby for potential evacuations.",
+    alertType: "Landslide Warning",
+    alertColor: "bg-orange-600",
   },
 ];
 
@@ -79,6 +107,7 @@ const safety = [
 export default function CitizenDashboard() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(carouselSlides[0]);
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -105,34 +134,22 @@ export default function CitizenDashboard() {
     >
       <div className="space-y-6">
         <div className="overflow-hidden glass-panel shadow-card">
-          <div className="relative h-64 w-full">
-            <Image
-              src="/sample-crisis.png"
-              alt="Firefighters contain forest park wildfire"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute left-5 top-5 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-lg">
-              Weather Alert
-            </div>
-            <button className="absolute right-5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-bg-primary/90 text-text-primary shadow-lg backdrop-blur-sm">
-              &gt;
-            </button>
-            <button className="absolute left-5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-bg-primary/90 text-text-primary shadow-lg backdrop-blur-sm">
-              &lt;
-            </button>
-          </div>
-
-            <div className="space-y-3 px-6 py-4">
+          <ImageCarousel 
+            slides={carouselSlides} 
+            autoPlay={true} 
+            interval={5000} 
+            onSlideChange={(slide) => setCurrentSlide(slide)}
+          />
+          
+          <div className="space-y-3 px-6 py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
               VALIDATE ALERT
             </p>
             <h2 className="text-xl font-semibold text-text-primary">
-              Firefighters Contain Forest Park Wildfire
+              {currentSlide.title}
             </h2>
             <p className="text-sm text-text-secondary leading-relaxed">
-              Fire crews working around the clock have successfully established
-              firebreaks. Evacuation orders remain in effect for zone MN-65.
+              {currentSlide.description}
             </p>
           </div>
 
