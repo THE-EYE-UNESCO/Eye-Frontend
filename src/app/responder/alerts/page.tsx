@@ -39,26 +39,36 @@ export default function ResponderAlertsPage() {
 
   useEffect(() => {
     setMounted(true);
-    const fetchReports = async () => {
+    const fetchIncidents = async () => {
       try {
-        const data = await api.get("/responder/reports");
-        const mappedAlerts: AlertItem[] = data.reports.map((r: any) => ({
-          id: r.id,
-          title: r.title,
-          message: r.description,
-          severity: (r.severity.charAt(0).toUpperCase() + r.severity.slice(1).toLowerCase()) as Severity,
-          createdAgo: getTimeAgo(r.created_at),
-          delivery: ["App", "SMS"], // Simulation
-          acknowledged: r.status === 'RESOLVED'
-        }));
+        // /responder/incidents returns incidents that wrap the citizen report
+        const data = await api.get("/responder/incidents");
+        const incidents: any[] = data.incidents || [];
+        const mappedAlerts: AlertItem[] = incidents.map((inc: any) => {
+          const r = inc.report || inc; // handle both nested and flat shapes
+          const rawSeverity: string = r.severity || "Low";
+          const capitalized = (rawSeverity.charAt(0).toUpperCase() +
+            rawSeverity.slice(1).toLowerCase()) as Severity;
+          return {
+            id: inc.id,
+            title: r.title || "Incident",
+            message: r.description || "",
+            severity: capitalized,
+            createdAgo: getTimeAgo(
+              r.created_at || inc.created_at || new Date().toISOString(),
+            ),
+            delivery: ["App", "SMS"],
+            acknowledged: inc.status === "RESOLVED" || inc.status === "ON_SITE",
+          };
+        });
         setAlerts(mappedAlerts);
       } catch (error) {
-        console.error("Failed to fetch reports for alerts:", error);
+        console.error("Failed to fetch incidents for alerts:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchReports();
+    fetchIncidents();
   }, []);
 
   const getTimeAgo = (date: string) => {
@@ -81,7 +91,8 @@ export default function ResponderAlertsPage() {
   const filtered = useMemo(() => {
     return alerts.filter((a) => {
       if (!showAcknowledged && a.acknowledged) return false;
-      if (severityFilter !== "All" && a.severity !== severityFilter) return false;
+      if (severityFilter !== "All" && a.severity !== severityFilter)
+        return false;
       return true;
     });
   }, [alerts, showAcknowledged, severityFilter]);
@@ -89,8 +100,22 @@ export default function ResponderAlertsPage() {
   const activeAlerts = filtered.filter((a) => !a.acknowledged);
   const ackAlerts = filtered.filter((a) => a.acknowledged);
 
-  const acknowledge = (id: string) => {
-    setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)));
+  const acknowledge = async (id: string) => {
+    // Optimistically update UI
+    setAlerts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)),
+    );
+    try {
+      await api.patch(`/responder/incidents/${id}/status`, {
+        status: "ON_THE_WAY",
+      });
+    } catch (error) {
+      console.error("Failed to update incident status:", error);
+      // Revert on error
+      setAlerts((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, acknowledged: false } : a)),
+      );
+    }
   };
 
   if (!mounted) return null;
@@ -125,22 +150,47 @@ export default function ResponderAlertsPage() {
 
         {/* Filters */}
         <div className="glass-panel p-4 shadow-card">
-          <p className="text-[11px] font-semibold text-text-muted">Filter by Priority</p>
+          <p className="text-[11px] font-semibold text-text-muted">
+            Filter by Priority
+          </p>
           <div className="mt-3 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
             <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm shadow-sm transition">
               <span className="text-text-secondary">
-                {severityFilter === "All" ? "All Severities..." : severityFilter}
+                {severityFilter === "All"
+                  ? "All Severities..."
+                  : severityFilter}
               </span>
               <select
                 className="bg-transparent text-sm text-text-primary focus:outline-none"
                 value={severityFilter}
-                onChange={(e) => setSeverityFilter(e.target.value as Severity | "All")}
+                onChange={(e) =>
+                  setSeverityFilter(e.target.value as Severity | "All")
+                }
               >
-                <option value="All" className="bg-bg-primary text-text-primary">All</option>
-                <option value="Critical" className="bg-bg-primary text-text-primary">Critical</option>
-                <option value="High" className="bg-bg-primary text-text-primary">High</option>
-                <option value="Medium" className="bg-bg-primary text-text-primary">Medium</option>
-                <option value="Low" className="bg-bg-primary text-text-primary">Low</option>
+                <option value="All" className="bg-bg-primary text-text-primary">
+                  All
+                </option>
+                <option
+                  value="Critical"
+                  className="bg-bg-primary text-text-primary"
+                >
+                  Critical
+                </option>
+                <option
+                  value="High"
+                  className="bg-bg-primary text-text-primary"
+                >
+                  High
+                </option>
+                <option
+                  value="Medium"
+                  className="bg-bg-primary text-text-primary"
+                >
+                  Medium
+                </option>
+                <option value="Low" className="bg-bg-primary text-text-primary">
+                  Low
+                </option>
               </select>
             </div>
 
@@ -158,7 +208,9 @@ export default function ResponderAlertsPage() {
 
         {/* Active Alerts */}
         <section className="space-y-3">
-          <p className="text-xs font-semibold text-text-primary">High Priority Tasks</p>
+          <p className="text-xs font-semibold text-text-primary">
+            High Priority Tasks
+          </p>
 
           {activeAlerts.length === 0 ? (
             <div className="glass-panel p-6 text-sm text-text-muted shadow-sm">
@@ -173,11 +225,15 @@ export default function ResponderAlertsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${severityBadge(a.severity)}`}>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${severityBadge(a.severity)}`}
+                      >
                         {a.severity.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-text-primary">{a.title}</p>
+                    <p className="text-sm font-semibold text-text-primary">
+                      {a.title}
+                    </p>
 
                     <div className="flex flex-wrap items-center gap-2 text-[10px] text-text-muted">
                       <span className="text-text-muted">Channels:</span>
@@ -191,7 +247,9 @@ export default function ResponderAlertsPage() {
                       ))}
                     </div>
                   </div>
-                  <p className="text-[10px] text-text-muted/70">{a.createdAgo}</p>
+                  <p className="text-[10px] text-text-muted/70">
+                    {a.createdAgo}
+                  </p>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -216,7 +274,9 @@ export default function ResponderAlertsPage() {
 
         {/* Acknowledged Alerts */}
         <section className="space-y-3">
-          <p className="text-xs font-semibold text-text-primary">History / Resolved</p>
+          <p className="text-xs font-semibold text-text-primary">
+            History / Resolved
+          </p>
 
           {ackAlerts.length === 0 ? (
             <div className="glass-panel p-6 text-sm text-text-muted shadow-sm">
@@ -231,7 +291,9 @@ export default function ResponderAlertsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${severityBadge(a.severity)}`}>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${severityBadge(a.severity)}`}
+                      >
                         {a.severity.toUpperCase()}
                       </span>
                     </div>
@@ -241,7 +303,9 @@ export default function ResponderAlertsPage() {
                       Resolved
                     </p>
                   </div>
-                  <p className="text-[10px] text-text-muted/70">{a.createdAgo}</p>
+                  <p className="text-[10px] text-text-muted/70">
+                    {a.createdAgo}
+                  </p>
                 </div>
               </div>
             ))
