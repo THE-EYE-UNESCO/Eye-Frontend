@@ -63,6 +63,7 @@ export default function AlertsPage() {
       // Use citizen's own reports as alerts — high/critical pending ones show as active alerts
       const data = await api.get("/reports");
       const reports: any[] = data.reports || [];
+      
       const mapped: AlertItem[] = reports.map((r: any) => ({
         id: r.id,
         title: r.title,
@@ -98,22 +99,6 @@ export default function AlertsPage() {
 
   const activeAlerts = filtered.filter((a) => !a.acknowledged);
   const ackAlerts = filtered.filter((a) => a.acknowledged);
-
-  const acknowledge = async (id: string) => {
-    // Optimistically update
-    setAlerts((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)),
-    );
-    try {
-      await api.put(`/reports/${id}`, { status: "RESOLVED" });
-    } catch (error) {
-      console.error("Failed to acknowledge alert:", error);
-      // Revert on error
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, acknowledged: false } : a)),
-      );
-    }
-  };
 
   return (
     <CitizenShell
@@ -248,12 +233,6 @@ export default function AlertsPage() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-3">
-                      <button
-                        onClick={() => acknowledge(a.id)}
-                        className="rounded-xl bg-tealGlow px-4 py-2 text-[11px] font-semibold text-night shadow-glow-button hover:opacity-90 transition"
-                      >
-                        Acknowledge Alert
-                      </button>
                       <button className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
                         View Details
                       </button>

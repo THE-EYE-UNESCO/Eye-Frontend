@@ -55,6 +55,7 @@ export default function CommunityHubPage() {
   const [newComment, setNewComment] = useState("");
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>("");
   const [userDetails, setUserDetails] = useState<Record<string, { name: string; email: string }>>({});
@@ -139,22 +140,28 @@ export default function CommunityHubPage() {
     if (!canShare) return;
     setIsSharing(true);
     try {
+      const formData = new FormData();
+      formData.append('title', storyTitle);
+      formData.append('body', storyBody);
+      formData.append('tag', storyTag);
+      formData.append('author_name', userName);
+      
+      if (selectedImageFile) {
+        formData.append('image', selectedImageFile);
+      }
+
       if (editingStoryId) {
-        await api.put(`/stories/${editingStoryId}`, {
-          title: storyTitle,
-          body: storyBody,
-          tag: storyTag,
-          image_url: selectedImage,
-          author_name: userName
+        await api.put(`/stories/${editingStoryId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
         setEditingStoryId(null);
       } else {
-        await api.post("/stories", {
-          title: storyTitle,
-          body: storyBody,
-          tag: storyTag,
-          image_url: selectedImage,
-          author_name: userName
+        await api.post("/stories", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
         
         // Update user stats in real-time if logged in and creating new story
@@ -169,6 +176,7 @@ export default function CommunityHubPage() {
       setStoryTitle("");
       setStoryBody("");
       setSelectedImage(null);
+      setSelectedImageFile(null);
       fetchStories();
     } catch (error) {
       console.error("Error sharing/updating story:", error);
@@ -195,6 +203,7 @@ export default function CommunityHubPage() {
     setStoryBody(story.body);
     setStoryTag(story.tag || "relief story");
     setSelectedImage(story.image_url || null);
+    setSelectedImageFile(null); // Clear file when editing existing story
     setIsComposerOpen(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -348,6 +357,7 @@ export default function CommunityHubPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result as string);
@@ -411,6 +421,7 @@ export default function CommunityHubPage() {
                       setStoryTitle("");
                       setStoryBody("");
                       setSelectedImage(null);
+                      setSelectedImageFile(null);
                     }}
                     aria-label="Close"
                   >
@@ -495,6 +506,7 @@ export default function CommunityHubPage() {
                         setStoryTitle("");
                         setStoryBody("");
                         setSelectedImage(null);
+                        setSelectedImageFile(null);
                       }}
                     >
                       Cancel
