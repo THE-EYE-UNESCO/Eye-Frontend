@@ -16,10 +16,17 @@ export default function ReportEvidencePage() {
     try {
       const saved = localStorage.getItem("reportData");
       if (!saved) throw new Error("No report data found");
-      
-      const reportData = JSON.parse(saved);
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      
+
+      let reportData;
+      let user;
+      try {
+        reportData = saved && saved !== "undefined" ? JSON.parse(saved) : {};
+        const userStr = localStorage.getItem("user");
+        user = userStr && userStr !== "undefined" ? JSON.parse(userStr) : {};
+      } catch (e) {
+        throw new Error("Invalid session data. Please sign in again.");
+      }
+
       const payload = {
         citizen_id: user.id || null,
         title: reportData.title,
@@ -30,11 +37,11 @@ export default function ReportEvidencePage() {
         longitude: reportData.longitude || 0,
         address: reportData.address,
         landmark: reportData.landmark,
-        status: "PENDING"
+        status: "PENDING",
       };
 
       await api.post("/reports", payload);
-      
+
       // Clear data on success
       localStorage.removeItem("reportData");
       router.push("/citizen/report/success");
@@ -65,12 +72,16 @@ export default function ReportEvidencePage() {
         </div>
 
         <div className="glass-panel p-6 shadow-card space-y-6">
-          <h2 className="text-lg font-semibold text-text-primary">Add evidence</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            Add evidence
+          </h2>
 
           <label className="block">
             <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-card-border bg-card-bg px-6 py-10 text-center hover:border-tealGlow/50 transition cursor-pointer shadow-sm">
               <UploadCloud className="h-6 w-6 text-tealGlow" />
-              <p className="text-sm font-semibold text-text-primary">Upload photos or videos</p>
+              <p className="text-sm font-semibold text-text-primary">
+                Upload photos or videos
+              </p>
               <p className="text-xs text-text-muted">Click to select files</p>
             </div>
             <input
@@ -87,7 +98,9 @@ export default function ReportEvidencePage() {
 
           {files.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-text-primary">Selected files</p>
+              <p className="text-xs font-semibold text-text-primary">
+                Selected files
+              </p>
               <div className="space-y-2">
                 {files.map((f) => (
                   <div
@@ -98,7 +111,9 @@ export default function ReportEvidencePage() {
                       <Paperclip className="h-4 w-4 text-tealGlow" />
                       {f.name}
                     </span>
-                    <span className="text-text-muted">{Math.ceil(f.size / 1024)} KB</span>
+                    <span className="text-text-muted">
+                      {Math.ceil(f.size / 1024)} KB
+                    </span>
                   </div>
                 ))}
               </div>
@@ -146,7 +161,9 @@ function StepItem({
     <div className="flex items-center gap-3">
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
-          primary ? "bg-tealGlow text-night shadow-glow-button font-bold" : "bg-card-bg text-text-muted border border-card-border"
+          primary
+            ? "bg-tealGlow text-night shadow-glow-button font-bold"
+            : "bg-card-bg text-text-muted border border-card-border"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
@@ -154,7 +171,11 @@ function StepItem({
       <div className="min-w-0">
         <p
           className={`text-xs font-semibold transition ${
-            active ? "text-tealGlow" : completed ? "text-text-primary" : "text-text-muted"
+            active
+              ? "text-tealGlow"
+              : completed
+                ? "text-text-primary"
+                : "text-text-muted"
           }`}
         >
           {label}
@@ -168,4 +189,3 @@ function StepItem({
     </div>
   );
 }
-

@@ -1,5 +1,18 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
+const safeParseUser = () => {
+  if (typeof window === 'undefined') return null;
+  const userStr = localStorage.getItem('user');
+  if (!userStr || userStr === 'undefined') return null;
+  try {
+    return JSON.parse(userStr);
+  } catch (e) {
+    console.warn('Invalid user data in localStorage');
+    return null;
+  }
+};
+
+
 export const api = {
   async post(endpoint: string, data: any) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -7,7 +20,7 @@ export const api = {
       'Content-Type': 'application/json',
     };
 
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+    const user = safeParseUser();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -45,7 +58,7 @@ export const api = {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const headers: Record<string, string> = {};
 
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+    const user = safeParseUser();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -81,7 +94,7 @@ export const api = {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const headers: Record<string, string> = {};
 
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+    const user = safeParseUser();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -119,7 +132,7 @@ export const api = {
       'Content-Type': 'application/json',
     };
 
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+    const user = safeParseUser();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -158,7 +171,7 @@ export const api = {
       'Content-Type': 'application/json',
     };
 
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+    const user = safeParseUser();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
