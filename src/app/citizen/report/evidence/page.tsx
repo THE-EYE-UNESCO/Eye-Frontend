@@ -28,16 +28,15 @@ export default function ReportEvidencePage() {
       }
 
       const payload = {
-        citizen_id: user.id || null,
         title: reportData.title,
         description: reportData.description,
         category: reportData.category,
         severity: reportData.severity.toUpperCase(), // Backend expects uppercase enum values
         latitude: reportData.latitude || 0,
         longitude: reportData.longitude || 0,
-        address: reportData.address,
-        landmark: reportData.landmark,
-        status: "PENDING",
+        address: reportData.address || '',
+        landmark: reportData.landmark || '',
+        anonymous: false, // Set to true if user wants to remain anonymous
       };
 
       await api.post("/reports", payload);

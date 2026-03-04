@@ -42,7 +42,7 @@ export default function MyReportsPage() {
 
   const fetchReports = async () => {
     try {
-      const data = await api.get("/reports/my-reports");
+      const data = await api.get("/reports");
       setReports(data.reports);
     } catch (error) {
       console.error("Error fetching reports:", error);
