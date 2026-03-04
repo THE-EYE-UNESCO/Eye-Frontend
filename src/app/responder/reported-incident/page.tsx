@@ -1,94 +1,121 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Users, 
-  Shield, 
-  MessageSquare, 
-  Share2, 
-  MapPin, 
-  Clock, 
-  ChevronDown
+import {
+  Users,
+  Shield,
+  MessageSquare,
+  Share2,
+  MapPin,
+  Clock,
+  ChevronDown,
 } from "lucide-react";
 import { ResponderShell } from "../_components/ResponderShell";
-
 import { api } from "@/lib/api";
 
-interface Report {
+interface Incident {
   id: string;
-  title: string;
-  description: string;
-  landmark: string;
-  address: string;
-  created_at: string;
-  severity: string;
-  category: string;
   status: string;
+  report: {
+    title: string;
+    description: string;
+    landmark?: string;
+    address?: string;
+    created_at: string;
+    severity: string;
+    category: string;
+    status: string;
+  };
 }
 
 export default function ReportedIncidentsPage() {
-  const [reports, setReports] = useState<Report[]>([]);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchIncidents = async () => {
       try {
-        const data = await api.get("/responder/reports");
-        setReports(data.reports);
+        const data = await api.get("/responder/incidents");
+        setIncidents(data.incidents || []);
       } catch (error) {
-        console.error("Failed to fetch reports:", error);
+        console.error("Failed to fetch incidents:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchReports();
+    fetchIncidents();
   }, []);
 
-  if (loading) return (
-    <ResponderShell title="Citizens Reports" subtitle="Loading latest reports...">
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tealGlow"></div>
-      </div>
-    </ResponderShell>
-  );
+  const updateStatus = async (incidentId: string, status: string) => {
+    setUpdatingId(incidentId);
+    try {
+      await api.patch(`/responder/incidents/${incidentId}/status`, { status });
+      setIncidents((prev) =>
+        prev.map((inc) => (inc.id === incidentId ? { ...inc, status } : inc)),
+      );
+    } catch (error) {
+      console.error("Failed to update incident status:", error);
+      alert("Failed to update status. Please try again.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  if (loading)
+    return (
+      <ResponderShell title="Assigned Incidents" subtitle="Loading...">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tealGlow"></div>
+        </div>
+      </ResponderShell>
+    );
 
   return (
     <ResponderShell
-      title="Citizens Reports"
-      subtitle="Real-time citizen reports and incident verification"
+      title="Assigned Incidents"
+      subtitle="Real-time incidents assigned to you"
     >
       <div className="space-y-8">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            label="Total Reports"
-            value={reports.length.toString()}
+            label="Total Assigned"
+            value={incidents.length.toString()}
             icon={<Users className="h-6 w-6" />}
-            color="bg-[#7C3AED]" // Purple
+            color="bg-[#7C3AED]"
           />
           <StatCard
-            label="Critical Ops"
-            value={reports.filter(r => r.severity === 'CRITICAL').length.toString()}
+            label="Critical"
+            value={incidents
+              .filter((i) => i.report?.severity === "CRITICAL")
+              .length.toString()}
             icon={<Shield className="h-6 w-6" />}
-            color="bg-[#C04ABB]" // Pink/Magenta
+            color="bg-[#C04ABB]"
           />
           <StatCard
-            label="Verified"
-            value={reports.filter(r => r.status === 'VERIFIED').length.toString()}
+            label="On The Way"
+            value={incidents
+              .filter((i) => i.status === "ON_THE_WAY")
+              .length.toString()}
             icon={<MessageSquare className="h-6 w-6" />}
-            color="bg-[#2563EB]" // Blue
+            color="bg-[#2563EB]"
           />
           <StatCard
-            label="Active Response"
-            value={reports.filter(r => r.status === 'IN_PROGRESS').length.toString()}
+            label="Resolved"
+            value={incidents
+              .filter((i) => i.status === "RESOLVED")
+              .length.toString()}
             icon={<Share2 className="h-6 w-6" />}
-            color="bg-[#3F7D20]" // Green
+            color="bg-[#3F7D20]"
           />
         </div>
 
         {/* Filter Bar */}
         <div className="glass-panel p-6 shadow-card">
-          <p className="mb-4 text-xs font-semibold text-text-muted">Filter by Severity</p>
+          <p className="mb-4 text-xs font-semibold text-text-muted">
+            Filter by Severity
+          </p>
           <div className="flex flex-wrap items-center gap-4">
             <FilterSelect label="All Severities..." />
             <FilterSelect label="All Status" />
@@ -98,15 +125,20 @@ export default function ReportedIncidentsPage() {
           </div>
         </div>
 
-        {/* Reports List */}
+        {/* Incidents List */}
         <div className="space-y-6">
-          {reports.length === 0 ? (
+          {incidents.length === 0 ? (
             <div className="glass-panel p-12 text-center text-text-secondary">
-              No citizen reports found.
+              No incidents assigned to you yet.
             </div>
           ) : (
-            reports.map((report) => (
-              <ReportCard key={report.id} report={report} />
+            incidents.map((incident) => (
+              <IncidentCard
+                key={incident.id}
+                incident={incident}
+                onStatusUpdate={updateStatus}
+                updatingId={updatingId}
+              />
             ))
           )}
         </div>
@@ -115,9 +147,21 @@ export default function ReportedIncidentsPage() {
   );
 }
 
-function StatCard({ label, value, icon, color }: { label: string; value: string; icon: React.ReactNode; color: string }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  color,
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  color: string;
+}) {
   return (
-    <div className={`${color} rounded-3xl p-6 text-white shadow-lg transition hover:scale-[1.02]`}>
+    <div
+      className={`${color} rounded-3xl p-6 text-white shadow-lg transition hover:scale-[1.02]`}
+    >
       <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/20 mb-4">
         {icon}
       </div>
@@ -136,7 +180,17 @@ function FilterSelect({ label }: { label: string }) {
   );
 }
 
-function ReportCard({ report }: { report: Report }) {
+function IncidentCard({
+  incident,
+  onStatusUpdate,
+  updatingId,
+}: {
+  incident: Incident;
+  onStatusUpdate: (id: string, status: string) => void;
+  updatingId: string | null;
+}) {
+  const report = incident.report || ({} as Incident["report"]);
+
   const getTimeAgo = (date: string) => {
     const now = new Date();
     const then = new Date(date);
@@ -148,31 +202,34 @@ function ReportCard({ report }: { report: Report }) {
   };
 
   const isCritical = report.severity === "CRITICAL";
+  const isUpdating = updatingId === incident.id;
+  const isResolved = incident.status === "RESOLVED";
 
   return (
     <div className="group relative overflow-hidden rounded-[40px] border border-card-border bg-[#0A0F16] p-8 sm:p-10 shadow-xl transition-all hover:shadow-2xl hover:border-tealGlow/20">
-      {/* Red vertical bar for Critical */}
       {isCritical && (
         <div className="absolute left-0 top-0 h-full w-1.5 bg-[#FF3B3B] shadow-[0_0_15px_rgba(255,59,59,0.5)]" />
       )}
-      
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-5 flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <span className={`rounded-xl px-4 py-1.5 text-[10px] font-black tracking-widest text-white uppercase ${
-              isCritical ? "bg-[#FF3B3B]" : "bg-orange-500"
-            }`}>
-              {report.severity}
+            <span
+              className={`rounded-xl px-4 py-1.5 text-[10px] font-black tracking-widest text-white uppercase ${
+                isCritical ? "bg-[#FF3B3B]" : "bg-orange-500"
+              }`}
+            >
+              {report.severity || "UNKNOWN"}
             </span>
             <span className="rounded-xl bg-[#2D1B1B] px-4 py-1.5 text-[10px] font-black tracking-widest text-[#FF4D4D] uppercase border border-[#FF3B3B]/10">
-              {report.status === 'VERIFIED' ? 'Verified' : 'Pending'}
+              {incident.status}
             </span>
           </div>
 
-          <h3 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight decoration-2 underline-offset-8 group-hover:underline cursor-pointer">
-            {report.title}
+          <h3 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
+            {report.title || "Incident"}
           </h3>
-          
+
           <p className="text-sm sm:text-base leading-relaxed text-[#94A3B8] max-w-3xl">
             {report.description}
           </p>
@@ -180,7 +237,7 @@ function ReportCard({ report }: { report: Report }) {
           <div className="flex flex-wrap items-center gap-8 text-[11px] font-bold text-[#64748B] tracking-tight">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-tealGlow" />
-              <span>{report.landmark || report.address}</span>
+              <span>{report.landmark || report.address || "Location N/A"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -190,18 +247,35 @@ function ReportCard({ report }: { report: Report }) {
         </div>
 
         <button className="rounded-2xl bg-[#3B82F6] px-10 py-4 text-sm font-black text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-[#2563EB] hover:scale-105 active:scale-95 transition-all self-start md:self-center">
-          Respond
+          View Details
         </button>
       </div>
 
       <div className="mt-10 pt-8 border-t border-white/5 flex flex-wrap items-center gap-6">
-        <span className="text-[12px] font-black text-text-primary uppercase tracking-widest">Quick Actions:</span>
+        <span className="text-[12px] font-black text-text-primary uppercase tracking-widest">
+          Quick Actions:
+        </span>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors">
-            Mark Verified
+          <button
+            disabled={isUpdating || isResolved}
+            onClick={() => onStatusUpdate(incident.id, "ON_THE_WAY")}
+            className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isUpdating ? "Updating..." : "On The Way"}
           </button>
-          <button className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors">
-            Start Response
+          <button
+            disabled={isUpdating || isResolved}
+            onClick={() => onStatusUpdate(incident.id, "ON_SITE")}
+            className="rounded-xl bg-[#0F1721] px-6 py-2.5 text-[11px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isUpdating ? "Updating..." : "On Site"}
+          </button>
+          <button
+            disabled={isUpdating || isResolved}
+            onClick={() => onStatusUpdate(incident.id, "RESOLVED")}
+            className="rounded-xl bg-green-700/20 px-6 py-2.5 text-[11px] font-bold text-green-400 border border-green-700/30 hover:bg-green-700/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isUpdating ? "Updating..." : "Mark Resolved"}
           </button>
         </div>
       </div>
