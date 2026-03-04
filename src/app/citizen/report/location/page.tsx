@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CitizenShell } from "../../_components/CitizenShell";
 
@@ -9,6 +9,8 @@ export default function ReportLocationPage() {
   const router = useRouter();
   const [preciseLocation, setPreciseLocation] = useState("");
   const [landmark, setLandmark] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [coordsLabel, setCoordsLabel] = useState<string | null>(null);
 
   React.useEffect(() => {
     const saved = localStorage.getItem("reportData");
@@ -25,18 +27,50 @@ export default function ReportLocationPage() {
 
   const handleContinue = () => {
     const current = JSON.parse(localStorage.getItem("reportData") || "{}");
-    localStorage.setItem("reportData", JSON.stringify({
-      ...current,
-      address: preciseLocation,
-      landmark: landmark,
-      // Mock coordinates for now as requested by typical schema
-      latitude: -1.9441, 
-      longitude: 30.0619
-    }));
+    // Parse coordinates from address field if they were set via geolocation
+    const latLng = coordsLabel?.split(",").map(Number);
+    localStorage.setItem(
+      "reportData",
+      JSON.stringify({
+        ...current,
+        address: preciseLocation,
+        landmark: landmark,
+        latitude: latLng?.[0] ?? current.latitude ?? -1.9441,
+        longitude: latLng?.[1] ?? current.longitude ?? 30.0619,
+      }),
+    );
     router.push("/citizen/report/evidence");
   };
 
-  const canSubmit = useMemo(() => Boolean(preciseLocation.trim()), [preciseLocation]);
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const coordStr = `${latitude},${longitude}`;
+        setCoordsLabel(coordStr);
+        setPreciseLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        setLocating(false);
+      },
+      (error) => {
+        console.warn("Geolocation error:", error);
+        // Fall back to Kigali default
+        setPreciseLocation("Kigali, Rwanda");
+        setCoordsLabel("-1.9441,30.0619");
+        setLocating(false);
+      },
+      { timeout: 10000 },
+    );
+  };
+
+  const canSubmit = useMemo(
+    () => Boolean(preciseLocation.trim()),
+    [preciseLocation],
+  );
 
   return (
     <CitizenShell
@@ -55,7 +89,9 @@ export default function ReportLocationPage() {
         </div>
 
         <div className="glass-panel p-6 shadow-card space-y-6">
-          <h2 className="text-xl font-semibold text-text-primary">Where is this happening ?</h2>
+          <h2 className="text-xl font-semibold text-text-primary">
+            Where is this happening ?
+          </h2>
 
           <div className="space-y-5">
             {/* Precise location row */}
@@ -74,12 +110,17 @@ export default function ReportLocationPage() {
 
               <button
                 type="button"
-                className="h-[44px] w-full rounded-xl bg-tealGlow/10 border border-tealGlow/20 px-4 text-xs font-semibold text-tealGlow hover:bg-tealGlow/20 transition shadow-sm"
-                onClick={() => {
-                  setPreciseLocation("Kigali, Rwanda");
-                }}
+                className="h-[44px] w-full rounded-xl bg-tealGlow/10 border border-tealGlow/20 px-4 text-xs font-semibold text-tealGlow hover:bg-tealGlow/20 transition shadow-sm flex items-center justify-center gap-2"
+                onClick={useMyLocation}
+                disabled={locating}
               >
-                Use My Location
+                {locating ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Locating...
+                  </>
+                ) : (
+                  "Use My Location"
+                )}
               </button>
             </div>
 
@@ -98,7 +139,9 @@ export default function ReportLocationPage() {
 
             {/* Map preview */}
             <div className="h-64 w-full rounded-2xl border border-card-border bg-bg-secondary/50 flex flex-col items-center justify-center text-center backdrop-blur-sm shadow-inner">
-              <p className="text-sm font-semibold text-text-primary">Map preview will appear here</p>
+              <p className="text-sm font-semibold text-text-primary">
+                Map preview will appear here
+              </p>
               <p className="mt-1 text-xs text-text-muted max-w-xs">
                 Showing approximate location based on your input
               </p>
@@ -110,12 +153,17 @@ export default function ReportLocationPage() {
               type="button"
               className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-sm font-semibold text-text-muted sm:w-40 hover:bg-card-border/10 transition"
               onClick={() => {
-                const current = JSON.parse(localStorage.getItem("reportData") || "{}");
-                localStorage.setItem("reportData", JSON.stringify({
-                  ...current,
-                  address: preciseLocation,
-                  landmark: landmark
-                }));
+                const current = JSON.parse(
+                  localStorage.getItem("reportData") || "{}",
+                );
+                localStorage.setItem(
+                  "reportData",
+                  JSON.stringify({
+                    ...current,
+                    address: preciseLocation,
+                    landmark: landmark,
+                  }),
+                );
                 router.back();
               }}
             >
@@ -124,7 +172,9 @@ export default function ReportLocationPage() {
             <button
               type="button"
               className={`w-full rounded-2xl px-4 py-3 text-sm font-semibold sm:w-[420px] transition ${
-                canSubmit ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90" : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
+                canSubmit
+                  ? "bg-tealGlow text-night shadow-glow-button hover:opacity-90"
+                  : "bg-card-bg text-text-muted cursor-not-allowed border border-card-border"
               }`}
               disabled={!canSubmit}
               onClick={handleContinue}
@@ -152,7 +202,9 @@ function StepItem({
     <div className="flex items-center gap-3">
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
-          primary ? "bg-tealGlow text-night shadow-glow-button font-bold" : "bg-card-bg text-text-muted border border-card-border"
+          primary
+            ? "bg-tealGlow text-night shadow-glow-button font-bold"
+            : "bg-card-bg text-text-muted border border-card-border"
         }`}
       >
         <AlertTriangle className="h-5 w-5" />
@@ -160,7 +212,11 @@ function StepItem({
       <div className="min-w-0">
         <p
           className={`text-xs font-semibold transition ${
-            active ? "text-tealGlow" : completed ? "text-text-primary" : "text-text-muted"
+            active
+              ? "text-tealGlow"
+              : completed
+                ? "text-text-primary"
+                : "text-text-muted"
           }`}
         >
           {label}
@@ -174,4 +230,3 @@ function StepItem({
     </div>
   );
 }
-

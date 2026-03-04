@@ -1,9 +1,10 @@
 "use client";
 
 import { Search } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { ResponderShell } from "../_components/ResponderShell";
+import { api } from "@/lib/api";
 
 const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
   ssr: false,
@@ -13,8 +14,6 @@ const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
     </div>
   ),
 });
-
-import { api } from "@/lib/api";
 
 type Incident = {
   id: string;
@@ -39,42 +38,62 @@ const legend = [
 ];
 
 export default function ResponderCrisisMapPage() {
-  const [reports, setReports] = useState<any[]>([]);
+  const [rawIncidents, setRawIncidents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(
+    null,
+  );
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const fetchReports = async () => {
+  useEffect(() => {
+    const fetchIncidents = async () => {
       try {
-        const data = await api.get("/responder/reports");
-        setReports(data.reports);
+        const data = await api.get("/responder/incidents");
+        setRawIncidents(data.incidents || []);
       } catch (error) {
-        console.error("Failed to fetch reports:", error);
+        console.error("Failed to fetch incidents:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchReports();
+    fetchIncidents();
   }, []);
 
   const mappedIncidents = useMemo(() => {
-    return reports.map(r => ({
-      id: r.id,
-      title: r.title,
-      description: r.description,
-      severity: r.severity.charAt(0).toUpperCase() + r.severity.slice(1).toLowerCase(),
-      category: r.category.charAt(0).toUpperCase() + r.category.slice(1).toLowerCase(),
-      locationLabel: r.landmark || r.address || 'Unknown',
-      affectedRadiusKm: 2.0, // Default for now
-      status: r.status === 'PENDING' ? 'Active' : 'Resolved',
-      coords: [r.latitude, r.longitude] as [number, number],
-      color: legend.find(l => l.label.toLowerCase() === r.category.toLowerCase())?.dot || "#94a3b8"
-    }));
-  }, [reports]);
+    return rawIncidents
+      .filter((inc: any) => {
+        const r = inc.report || {};
+        return r.latitude != null && r.longitude != null;
+      })
+      .map((inc: any) => {
+        const r = inc.report || {};
+        const cat = r.category || "general";
+        return {
+          id: inc.id,
+          incidentStatus: inc.status,
+          title: r.title || "Incident",
+          description: r.description || "",
+          severity:
+            (r.severity || "low").charAt(0).toUpperCase() +
+            (r.severity || "low").slice(1).toLowerCase(),
+          category: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
+          locationLabel: r.landmark || r.address || "Unknown",
+          affectedRadiusKm: 2.0,
+          status: inc.status === "RESOLVED" ? "Resolved" : "Active",
+          coords: [parseFloat(r.latitude), parseFloat(r.longitude)] as [
+            number,
+            number,
+          ],
+          color:
+            legend.find((l) => l.label.toLowerCase() === cat.toLowerCase())
+              ?.dot || "#94a3b8",
+        };
+      });
+  }, [rawIncidents]);
 
   const selectedIncident = useMemo(
     () => mappedIncidents.find((i) => i.id === selectedIncidentId) ?? null,
-    [mappedIncidents, selectedIncidentId]
+    [mappedIncidents, selectedIncidentId],
   );
 
   const severityChipClass = (severity: string) => {
@@ -93,7 +112,9 @@ export default function ResponderCrisisMapPage() {
   };
 
   const categoryChipClass = (category: string) => {
-    const match = legend.find((l) => l.label.toLowerCase() === category.toLowerCase());
+    const match = legend.find(
+      (l) => l.label.toLowerCase() === category.toLowerCase(),
+    );
     return match?.color ?? "bg-slate-200 text-slate-700";
   };
 
@@ -125,7 +146,9 @@ export default function ResponderCrisisMapPage() {
           {/* Map card */}
           <div className="glass-panel p-4 shadow-card">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-text-primary">Interactive Map</p>
+              <p className="text-sm font-semibold text-text-primary">
+                Interactive Map
+              </p>
               <div className="flex items-center gap-2 text-xs text-text-muted">
                 <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse shadow-glow-red" />
                 <span>Live Updates</span>
@@ -134,14 +157,24 @@ export default function ResponderCrisisMapPage() {
 
             <div className="mt-4 overflow-hidden rounded-2xl border border-card-border bg-card-bg shadow-inner">
               <div className="relative h-[480px] w-full">
-                <ClientSideMap
-                  center={[-1.95, 30.06]}
-                  zoom={13}
-                  incidents={mappedIncidents}
-                  selectedIncidentId={selectedIncidentId}
-                  onIncidentClick={setSelectedIncidentId}
-                  locationLabel="Responder Unit Alpha • Active Tracking"
-                />
+                {loading ? (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-tealGlow border-t-transparent" />
+                  </div>
+                ) : (
+                  <ClientSideMap
+                    center={
+                      mappedIncidents.length > 0
+                        ? mappedIncidents[0].coords
+                        : [-1.95, 30.06]
+                    }
+                    zoom={13}
+                    incidents={mappedIncidents}
+                    selectedIncidentId={selectedIncidentId}
+                    onIncidentClick={setSelectedIncidentId}
+                    locationLabel="Responder Unit Alpha • Active Tracking"
+                  />
+                )}
               </div>
             </div>
 
@@ -149,7 +182,9 @@ export default function ResponderCrisisMapPage() {
             <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-text-muted">
               {legend.map((l) => (
                 <div key={l.label} className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 rounded-full shadow-sm ${l.color}`} />
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full shadow-sm ${l.color}`}
+                  />
                   <span className="capitalize">{l.label}</span>
                 </div>
               ))}
@@ -169,14 +204,14 @@ export default function ResponderCrisisMapPage() {
                 <div className="flex flex-wrap gap-2">
                   <span
                     className={`rounded-full px-3 py-1 text-[10px] font-semibold ${severityChipClass(
-                      selectedIncident.severity
+                      selectedIncident.severity,
                     )}`}
                   >
                     {selectedIncident.severity.toUpperCase()}
                   </span>
                   <span
                     className={`rounded-full px-3 py-1 text-[10px] font-semibold text-white ${categoryChipClass(
-                      selectedIncident.category
+                      selectedIncident.category,
                     )}`}
                   >
                     {selectedIncident.category.toUpperCase()}
@@ -184,7 +219,9 @@ export default function ResponderCrisisMapPage() {
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-text-primary">{selectedIncident.title}</p>
+                  <p className="text-sm font-semibold text-text-primary">
+                    {selectedIncident.title}
+                  </p>
                   <p className="mt-2 text-xs leading-relaxed text-text-secondary">
                     {selectedIncident.description}
                   </p>
@@ -192,7 +229,9 @@ export default function ResponderCrisisMapPage() {
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">Location</p>
+                    <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">
+                      Location
+                    </p>
                     <div className="mt-2 rounded-2xl bg-card-bg border border-card-border px-4 py-3 text-[11px] text-text-primary shadow-sm">
                       {selectedIncident.locationLabel}
                     </div>
@@ -208,18 +247,78 @@ export default function ResponderCrisisMapPage() {
                       </p>
                     </div>
                     <div className="rounded-2xl bg-card-bg border border-card-border px-4 py-3 shadow-sm">
-                      <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">Status</p>
-                      <p className="mt-1 text-[11px] text-text-primary">{selectedIncident.status}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">
+                        Status
+                      </p>
+                      <p className="mt-1 text-[11px] text-text-primary">
+                        {selectedIncident.status}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-xs font-semibold text-night shadow-glow-button hover:opacity-90 transition">
-                    Dispatch Unit
+                  <button
+                    disabled={
+                      updatingId === selectedIncident.id ||
+                      selectedIncident.status === "Resolved"
+                    }
+                    onClick={async () => {
+                      setUpdatingId(selectedIncident.id);
+                      try {
+                        await api.patch(
+                          `/responder/incidents/${selectedIncident.id}/status`,
+                          { status: "ON_THE_WAY" },
+                        );
+                        setRawIncidents((prev) =>
+                          prev.map((i) =>
+                            i.id === selectedIncident.id
+                              ? { ...i, status: "ON_THE_WAY" }
+                              : i,
+                          ),
+                        );
+                      } catch (e) {
+                        console.error(e);
+                      } finally {
+                        setUpdatingId(null);
+                      }
+                    }}
+                    className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-xs font-semibold text-night shadow-glow-button hover:opacity-90 transition disabled:opacity-50"
+                  >
+                    {updatingId === selectedIncident.id
+                      ? "Updating..."
+                      : "On The Way"}
                   </button>
-                  <button className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-xs font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
-                    View Impact Report
+                  <button
+                    disabled={
+                      updatingId === selectedIncident.id ||
+                      selectedIncident.status === "Resolved"
+                    }
+                    onClick={async () => {
+                      setUpdatingId(selectedIncident.id);
+                      try {
+                        await api.patch(
+                          `/responder/incidents/${selectedIncident.id}/status`,
+                          { status: "RESOLVED" },
+                        );
+                        setRawIncidents((prev) =>
+                          prev.map((i) =>
+                            i.id === selectedIncident.id
+                              ? { ...i, status: "RESOLVED" }
+                              : i,
+                          ),
+                        );
+                      } catch (e) {
+                        console.error(e);
+                      } finally {
+                        setUpdatingId(null);
+                      }
+                    }}
+                    className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-xs font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm disabled:opacity-50"
+                  >
+                    {updatingId === selectedIncident.id
+                      ? "Updating..."
+                      : "Mark Resolved"}
                   </button>
                 </div>
               </div>
@@ -231,20 +330,33 @@ export default function ResponderCrisisMapPage() {
           </div>
 
           <div className="glass-panel px-5 py-5 shadow-card">
-            <p className="text-sm font-semibold text-text-primary">Response Statistics</p>
+            <p className="text-sm font-semibold text-text-primary">
+              Response Statistics
+            </p>
 
             <div className="mt-4 space-y-3 text-xs">
               <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-text-primary shadow-sm">
-                <span>Active Units</span>
-                <span className="font-bold">14</span>
+                <span>Assigned Incidents</span>
+                <span className="font-bold">{rawIncidents.length}</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
                 <span className="font-medium">Critical Ops</span>
-                <span className="font-bold">3</span>
+                <span className="font-bold">
+                  {
+                    mappedIncidents.filter((i) => i.severity === "Critical")
+                      .length
+                  }
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-indigo-500 px-4 py-3 text-white shadow-sm">
-                <span className="font-medium">Standby</span>
-                <span className="font-bold">8</span>
+                <span className="font-medium">On The Way</span>
+                <span className="font-bold">
+                  {
+                    rawIncidents.filter(
+                      (i) => i.incidentStatus === "ON_THE_WAY",
+                    ).length
+                  }
+                </span>
               </div>
             </div>
           </div>
