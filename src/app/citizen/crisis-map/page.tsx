@@ -1,9 +1,10 @@
 "use client";
 
 import { Search } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { CitizenShell } from "../_components/CitizenShell";
+import { api } from "@/lib/api";
 
 const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
   ssr: false,
@@ -15,20 +16,30 @@ const ClientSideMap = dynamic(() => import("@/components/ClientSideMap"), {
 });
 
 const legend = [
-  { label: "Landslide", color: "bg-red-500", dot: "#ef4444" },
-  { label: "Flood", color: "bg-blue-500", dot: "#3b82f6" },
   { label: "Wildfire", color: "bg-orange-500", dot: "#f97316" },
+  { label: "Flood", color: "bg-blue-500", dot: "#3b82f6" },
+  { label: "Landslide", color: "bg-red-500", dot: "#ef4444" },
   { label: "Earthquake", color: "bg-purple-500", dot: "#a855f7" },
-  { label: "pandemic", color: "bg-cyan-400", dot: "#22d3ee" },
+  { label: "Pandemic", color: "bg-cyan-400", dot: "#22d3ee" },
   { label: "Infrastructure", color: "bg-amber-700", dot: "#b45309" },
 ];
+
+function getCategoryColor(category: string): string {
+  const cat = category?.toLowerCase() || "";
+  if (cat.includes("wildfire") || cat.includes("fire")) return "#f97316";
+  if (cat.includes("flood")) return "#3b82f6";
+  if (cat.includes("landslide")) return "#ef4444";
+  if (cat.includes("earthquake")) return "#a855f7";
+  if (cat.includes("pandemic") || cat.includes("disease")) return "#22d3ee";
+  return "#b45309";
+}
 
 type Incident = {
   id: string;
   title: string;
   description: string;
   severity: "Low" | "Medium" | "High" | "Critical";
-  category: (typeof legend)[number]["label"];
+  category: string;
   locationLabel: string;
   affectedRadiusKm: number;
   status: "Active" | "Resolved";
@@ -36,92 +47,56 @@ type Incident = {
   color: string;
 };
 
-const incidents: Incident[] = [
-  {
-    id: "pandemic-1",
-    title: "Disease cluster detected – North Sector",
-    description:
-      "AI analysis detected unusual pattern of respiratory illness reports. Vaccination gap identified.",
-    severity: "Medium",
-    category: "pandemic",
-    locationLabel: "North Sector, Districts 8-12",
-    affectedRadiusKm: 3.6,
-    status: "Active",
-    coords: [-1.955, 30.065],
-    color: "#22d3ee",
-  },
-  {
-    id: "landslide-1",
-    title: "Slope failure reported – Hill District",
-    description:
-      "Multiple reports of ground movement and blocked roadways. Avoid Route 12 and follow evacuation guidance.",
-    severity: "Critical",
-    category: "Landslide",
-    locationLabel: "Hill District, Sector 3",
-    affectedRadiusKm: 2.5,
-    status: "Active",
-    coords: [-1.941, 30.059],
-    color: "#ef4444",
-  },
-  {
-    id: "flood-1",
-    title: "Rising water levels – Riverbank Zone",
-    description:
-      "Water levels increasing rapidly after heavy rainfall. Low-lying homes at risk of flooding.",
-    severity: "High",
-    category: "Flood",
-    locationLabel: "Riverbank Zone, Block A",
-    affectedRadiusKm: 1.8,
-    status: "Active",
-    coords: [-1.94, 30.07],
-    color: "#3b82f6",
-  },
-  {
-    id: "wildfire-1",
-    title: "Brush fire detected – East Park",
-    description:
-      "Thermal anomaly detected. Smoke reported by nearby residents. Keep distance and report spread.",
-    severity: "Medium",
-    category: "Wildfire",
-    locationLabel: "East Park, Ridge Line",
-    affectedRadiusKm: 4.2,
-    status: "Active",
-    coords: [-1.95, 30.05],
-    color: "#f97316",
-  },
-  {
-    id: "quake-1",
-    title: "Minor seismic activity – Central Ward",
-    description:
-      "Sensors recorded light tremors. Inspect structures and follow official updates if aftershocks occur.",
-    severity: "Low",
-    category: "Earthquake",
-    locationLabel: "Central Ward",
-    affectedRadiusKm: 6.0,
-    status: "Active",
-    coords: [-1.96, 30.08],
-    color: "#a855f7",
-  },
-  {
-    id: "infra-1",
-    title: "Bridge damage reported – South Crossing",
-    description:
-      "Structural damage suspected. Avoid heavy vehicles and use alternate crossings until inspected.",
-    severity: "Medium",
-    category: "Infrastructure",
-    locationLabel: "South Crossing, Route 4",
-    affectedRadiusKm: 1.2,
-    status: "Active",
-    coords: [-1.948, 30.048],
-    color: "#b45309",
-  },
-];
+function mapSeverity(raw: string): Incident["severity"] {
+  const u = raw?.toUpperCase() || "";
+  if (u === "CRITICAL") return "Critical";
+  if (u === "HIGH") return "High";
+  if (u === "MEDIUM") return "Medium";
+  return "Low";
+}
 
 export default function CrisisMapPage() {
-  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const data = await api.get("/reports");
+        const reports: any[] = data.reports || [];
+        const mapped: Incident[] = reports
+          .filter((r: any) => r.latitude != null && r.longitude != null)
+          .map((r: any) => ({
+            id: r.id,
+            title: r.title,
+            description: r.description,
+            severity: mapSeverity(r.severity),
+            category: r.category || "General",
+            locationLabel: r.address || r.landmark || "Unknown location",
+            affectedRadiusKm: 1.0,
+            status: r.status === "RESOLVED" ? "Resolved" : "Active",
+            coords: [parseFloat(r.latitude), parseFloat(r.longitude)] as [
+              number,
+              number,
+            ],
+            color: getCategoryColor(r.category || ""),
+          }));
+        setIncidents(mapped);
+      } catch (error) {
+        console.error("Error fetching reports for map:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, []);
+
   const selectedIncident = useMemo(
     () => incidents.find((i) => i.id === selectedIncidentId) ?? null,
-    [selectedIncidentId]
+    [selectedIncidentId, incidents],
   );
 
   const severityChipClass = (severity: Incident["severity"]) => {
@@ -137,10 +112,9 @@ export default function CrisisMapPage() {
     }
   };
 
-  const categoryChipClass = (category: Incident["category"]) => {
-    const match = legend.find((l) => l.label === category);
-    return match?.color ?? "bg-slate-200 text-slate-700";
-  };
+  // Default map center — Kigali, Rwanda
+  const mapCenter: [number, number] =
+    incidents.length > 0 ? incidents[0].coords : [-1.95, 30.06];
 
   return (
     <CitizenShell
@@ -170,7 +144,9 @@ export default function CrisisMapPage() {
           {/* Map card */}
           <div className="glass-panel p-4 shadow-card">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-text-primary">Interactive Map</p>
+              <p className="text-sm font-semibold text-text-primary">
+                Interactive Map
+              </p>
               <div className="flex items-center gap-2 text-xs text-text-muted">
                 <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse shadow-glow-red" />
                 <span>Live Updates</span>
@@ -179,30 +155,38 @@ export default function CrisisMapPage() {
 
             <div className="mt-4 overflow-hidden rounded-2xl border border-card-border bg-card-bg shadow-inner">
               <div className="relative h-[360px] w-full">
-                <ClientSideMap
-                  center={[-1.95, 30.06]}
-                  zoom={13}
-                  incidents={incidents}
-                  selectedIncidentId={selectedIncidentId}
-                  onIncidentClick={setSelectedIncidentId}
-                  locationLabel="Your location • Current location"
-                />
+                {loading ? (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-tealGlow border-t-transparent" />
+                  </div>
+                ) : (
+                  <ClientSideMap
+                    center={mapCenter}
+                    zoom={13}
+                    incidents={incidents}
+                    selectedIncidentId={selectedIncidentId}
+                    onIncidentClick={setSelectedIncidentId}
+                    locationLabel="Your location • Current location"
+                  />
+                )}
               </div>
             </div>
 
-            {/* legend */}
+            {/* Legend */}
             <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-text-muted">
               {legend.map((l) => (
                 <div key={l.label} className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 rounded-full shadow-sm ${l.color}`} />
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full shadow-sm ${l.color}`}
+                  />
                   <span className="capitalize">{l.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* tip */}
             <div className="mt-4 rounded-2xl bg-card-bg border border-card-border px-4 py-3 text-[11px] text-text-muted shadow-sm">
-              <span className="font-semibold text-tealGlow">Tip:</span> Click on any incident marker to view detailed information
+              <span className="font-semibold text-tealGlow">Tip:</span> Click on
+              any incident marker to view detailed information
             </div>
           </div>
         </div>
@@ -218,23 +202,19 @@ export default function CrisisMapPage() {
               <div className="mt-4 space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <span
-                    className={`rounded-full px-3 py-1 text-[10px] font-semibold ${severityChipClass(
-                      selectedIncident.severity
-                    )}`}
+                    className={`rounded-full px-3 py-1 text-[10px] font-semibold ${severityChipClass(selectedIncident.severity)}`}
                   >
                     {selectedIncident.severity.toUpperCase()}
                   </span>
-                  <span
-                    className={`rounded-full px-3 py-1 text-[10px] font-semibold text-white ${categoryChipClass(
-                      selectedIncident.category
-                    )}`}
-                  >
+                  <span className="rounded-full bg-tealGlow/20 px-3 py-1 text-[10px] font-semibold text-tealGlow">
                     {selectedIncident.category.toUpperCase()}
                   </span>
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-text-primary">{selectedIncident.title}</p>
+                  <p className="text-sm font-semibold text-text-primary">
+                    {selectedIncident.title}
+                  </p>
                   <p className="mt-2 text-xs leading-relaxed text-text-secondary">
                     {selectedIncident.description}
                   </p>
@@ -242,7 +222,9 @@ export default function CrisisMapPage() {
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">Location</p>
+                    <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">
+                      Location
+                    </p>
                     <div className="mt-2 rounded-2xl bg-card-bg border border-card-border px-4 py-3 text-[11px] text-text-primary shadow-sm">
                       {selectedIncident.locationLabel}
                     </div>
@@ -251,15 +233,19 @@ export default function CrisisMapPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-2xl bg-card-bg border border-card-border px-4 py-3 shadow-sm">
                       <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">
-                        Affected Radius
+                        Status
                       </p>
                       <p className="mt-1 text-[11px] text-text-primary">
-                        {selectedIncident.affectedRadiusKm} km
+                        {selectedIncident.status}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-card-bg border border-card-border px-4 py-3 shadow-sm">
-                      <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">Status</p>
-                      <p className="mt-1 text-[11px] text-text-primary">{selectedIncident.status}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-text-muted font-bold">
+                        Severity
+                      </p>
+                      <p className="mt-1 text-[11px] text-text-primary">
+                        {selectedIncident.severity}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -268,7 +254,21 @@ export default function CrisisMapPage() {
                   <button className="w-full rounded-2xl bg-tealGlow px-4 py-3 text-xs font-semibold text-night shadow-glow-button hover:opacity-90 transition">
                     Get Safety Instructions
                   </button>
-                  <button className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-xs font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator
+                          .share({
+                            title: selectedIncident.title,
+                            text: selectedIncident.description,
+                          })
+                          .catch(() => {});
+                      } else {
+                        navigator.clipboard.writeText(selectedIncident.title);
+                      }
+                    }}
+                    className="w-full rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-xs font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm"
+                  >
                     Share This Alert
                   </button>
                 </div>
@@ -281,7 +281,9 @@ export default function CrisisMapPage() {
           </div>
 
           <div className="glass-panel px-5 py-5 shadow-card">
-            <p className="text-sm font-semibold text-text-primary">Map Statistics</p>
+            <p className="text-sm font-semibold text-text-primary">
+              Map Statistics
+            </p>
 
             <div className="mt-4 space-y-3 text-xs">
               <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-text-primary shadow-sm">
@@ -290,11 +292,15 @@ export default function CrisisMapPage() {
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
                 <span className="font-medium">Critical</span>
-                <span className="font-bold">2</span>
+                <span className="font-bold">
+                  {incidents.filter((i) => i.severity === "Critical").length}
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 text-white shadow-sm">
                 <span className="font-medium">Medium</span>
-                <span className="font-bold">2</span>
+                <span className="font-bold">
+                  {incidents.filter((i) => i.severity === "Medium").length}
+                </span>
               </div>
             </div>
           </div>
@@ -303,4 +309,3 @@ export default function CrisisMapPage() {
     </CitizenShell>
   );
 }
-

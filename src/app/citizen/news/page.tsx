@@ -1,221 +1,187 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { AlertTriangle, ArrowRight, Flame, Newspaper } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { AlertTriangle, ArrowRight, Newspaper } from "lucide-react";
 import { CitizenShell } from "../_components/CitizenShell";
+import { api } from "@/lib/api";
 
-const heroArticle = {
-  title: "Firefighters Contain Forest Park Wildfire",
-  body:
-    "Fire crews working around the clock have successfully established firebreaks. Evacuation orders remain in effect for zone MN-65.",
-  badge: "WILDFIRE ALERT",
-  image: "/sample-crisis.png",
-};
+interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  category?: string;
+  created_at: string;
+}
 
-const breakingNews = [
-  {
-    id: "b1",
-    title: "Landslide detected in Hill District",
-    tags: ["CRITICAL", "LANDSLIDE", "BREAKING NEWS"],
-    body:
-      "IoT sensors detected unusual ground movement. Satellite imagery confirms terrain shift in residential areas.",
-    location: "Hill District",
-    time: "12 min ago",
-    image: "/sample-crisis.png",
-  },
-  {
-    id: "b2",
-    title: "Flash flood warning – River Valley",
-    tags: ["MEDIUM", "FLOOD"],
-    body:
-      "Heavy rainfall detected upstream. Water levels rising rapidly. Predicted to affect low‑lying areas.",
-    location: "River Valley",
-    time: "36 min ago",
-    image: "/sample-crisis-ex.png",
-  },
-  {
-    id: "b3",
-    title: "Wildfire spreading near Forest Park",
-    tags: ["CRITICAL", "WILDFIRE"],
-    body:
-      "Fire detected by thermal imaging. Wind conditions causing rapid spread towards residential zones.",
-    location: "Forest Park",
-    time: "58 min ago",
-    image: "/sample-crisis.png",
-  },
-];
-
-const trendingNow = [
- "Emergency Response Teams Mobilized in residential area.",
- "Shelter Capacity Increased by 40%.",
- "Weather Alert: Heavy Rainfall Expected.",
-];
-
-const summary = {
-  articles: 24,
-  breaking: 3,
-  updates: 12,
-};
+function getTimeAgo(date: string) {
+  const now = new Date();
+  const then = new Date(date);
+  const diff = Math.floor((now.getTime() - then.getTime()) / 60000);
+  if (diff < 60) return `${diff}m ago`;
+  const hours = Math.floor(diff / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
 
 export default function NewsPage() {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const data = await api.get("/news?limit=20");
+        setNews(data.news || []);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, []);
+
+  const heroArticle = news[0];
+  const breakingNews = news.slice(1);
+
   return (
     <CitizenShell
       title="News & Updates"
       subtitle="Latest emergency updates and community news"
     >
       <div className="space-y-6">
-        {/* Hero banner */}
-        <div className="overflow-hidden glass-panel shadow-card">
-          <div className="relative h-64 w-full">
-            <Image
-              src={heroArticle.image}
-              alt={heroArticle.title}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute left-5 top-5 rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white">
-              {heroArticle.badge}
-            </div>
-            <button className="absolute right-5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow">
-              &gt;
-            </button>
-            <button className="absolute left-5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow">
-              &lt;
-            </button>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-tealGlow border-t-transparent" />
           </div>
-          <div className="space-y-3 px-6 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
-              Breaking Alert
+        ) : news.length === 0 ? (
+          <div className="glass-panel flex flex-col items-center justify-center py-20 text-center">
+            <Newspaper className="h-12 w-12 text-tealGlow/30 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-text-primary">No news yet</h3>
+            <p className="text-sm text-text-secondary mt-2">
+              Emergency updates and alerts will appear here when published.
             </p>
-            <h2 className="text-lg font-semibold text-text-primary">{heroArticle.title}</h2>
-            <p className="text-xs text-text-secondary">{heroArticle.body}</p>
           </div>
-        </div>
-
-        {/* Filters */}
-        <div className="glass-panel px-5 py-3 shadow-card">
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="text-text-muted">Filter by category :</span>
-            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
-              All News
-            </button>
-            <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white shadow-glow-red hover:opacity-90 transition">
-              Breaking News
-            </button>
-            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
-              Updates
-            </button>
-            <button className="rounded-full border border-card-border bg-card-bg px-3 py-1 text-[11px] text-text-primary hover:bg-card-border/20 transition shadow-sm">
-              Safety Tips
-            </button>
-          </div>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,0.9fr)]">
-          {/* Left: Breaking news list */}
-          <div className="space-y-4">
-            <p className="text-sm font-semibold text-text-primary">Breaking News</p>
-
-            {breakingNews.map((item) => (
-              <article
-                key={item.id}
-                className="overflow-hidden glass-panel shadow-card"
-              >
-                <div className="grid gap-0 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-                  {/* Text */}
-                  <div className="space-y-3 px-5 py-4">
-                    <div className="flex flex-wrap items-center gap-2 text-[10px]">
-                      {item.tags.map((t) => (
-                        <span
-                          key={t}
-                          className={`rounded-full px-2 py-1 font-semibold ${
-                            t === "CRITICAL"
-                              ? "bg-red-500 text-white"
-                              : t === "MEDIUM"
-                              ? "bg-amber-400 text-white"
-                              : t === "FLOOD"
-                              ? "bg-blue-500 text-white"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <h3 className="text-sm font-semibold text-text-primary">{item.title}</h3>
-                    <p className="text-xs leading-relaxed text-text-secondary">{item.body}</p>
-                    <div className="mt-3 flex flex-wrap gap-4 text-[10px] text-text-muted">
-                      <span>Location: {item.location}</span>
-                      <span>{item.time}</span>
-                    </div>
-                  </div>
-
-                  {/* Image */}
-                  <div className="relative h-40 w-full bg-slate-100 md:h-full">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+        ) : (
+          <>
+            {/* Hero article */}
+            {heroArticle && (
+              <div className="overflow-hidden glass-panel shadow-card">
+                <div className="space-y-3 px-6 py-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-500">
+                    {heroArticle.category || "Breaking Alert"}
+                  </p>
+                  <h2 className="text-lg font-semibold text-text-primary">
+                    {heroArticle.title}
+                  </h2>
+                  <p className="text-xs text-text-secondary line-clamp-3">
+                    {heroArticle.content}
+                  </p>
+                  <p className="text-[10px] text-text-muted">
+                    {getTimeAgo(heroArticle.created_at)}
+                  </p>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            )}
 
-          {/* Right column */}
-          <div className="space-y-5">
-            {/* Trending now */}
-            <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-text-primary">Trending Now</p>
-              <div className="mt-4 space-y-2 text-xs">
-                {trendingNow.map((t, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-2xl border border-card-border bg-card-bg px-4 py-3 text-text-primary shadow-sm transition hover:bg-card-border/10 cursor-default"
-                  >
-                    {t}
-                  </div>
-                ))}
+            {/* Filters */}
+            <div className="glass-panel px-5 py-3 shadow-card">
+              <div className="flex flex-wrap items-center gap-3 text-xs">
+                <span className="text-text-muted">Filter by category:</span>
+                <button className="rounded-full bg-red-500 px-3 py-1 text-[11px] font-semibold text-white shadow-glow-red hover:opacity-90 transition">
+                  All News
+                </button>
               </div>
             </div>
 
-            {/* Summary */}
-            <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-text-primary">Today&apos;s Summary</p>
-              <div className="mt-4 space-y-3 text-xs">
-                <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 shadow-sm transition">
-                  <span className="text-text-secondary">Articles Published</span>
-                  <span className="font-semibold text-text-primary">{summary.articles}</span>
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,0.9fr)]">
+              {/* Left: Breaking news list */}
+              <div className="space-y-4">
+                <p className="text-sm font-semibold text-text-primary">
+                  Latest Updates
+                </p>
+
+                {breakingNews.length === 0 ? (
+                  <div className="glass-panel p-6 text-sm text-text-muted">
+                    No additional articles.
+                  </div>
+                ) : (
+                  breakingNews.map((item) => (
+                    <article
+                      key={item.id}
+                      className="overflow-hidden glass-panel shadow-card"
+                    >
+                      <div className="space-y-3 px-5 py-4">
+                        <div className="flex flex-wrap items-center gap-2 text-[10px]">
+                          {item.category && (
+                            <span className="rounded-full bg-red-500 text-white px-2 py-1 font-semibold uppercase">
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-semibold text-text-primary">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs leading-relaxed text-text-secondary line-clamp-2">
+                          {item.content}
+                        </p>
+                        <div className="flex flex-wrap gap-4 text-[10px] text-text-muted">
+                          <span>{getTimeAgo(item.created_at)}</span>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+
+              {/* Right sidebar */}
+              <div className="space-y-5">
+                {/* Summary */}
+                <div className="glass-panel p-5 shadow-card">
+                  <p className="text-sm font-semibold text-text-primary">
+                    Today&apos;s Summary
+                  </p>
+                  <div className="mt-4 space-y-3 text-xs">
+                    <div className="flex items-center justify-between rounded-2xl border border-card-border bg-card-bg px-4 py-3 shadow-sm transition">
+                      <span className="text-text-secondary">
+                        Articles Published
+                      </span>
+                      <span className="font-semibold text-text-primary">
+                        {news.length}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
+                      <span className="font-medium">Breaking Alerts</span>
+                      <span className="font-bold">
+                        {news.filter(
+                          (n) =>
+                            n.category?.toLowerCase().includes("alert") ||
+                            n.category?.toLowerCase().includes("breaking"),
+                        ).length || 0}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between rounded-2xl bg-red-500 px-4 py-3 text-white shadow-glow-red">
-                  <span className="font-medium">Breaking Alerts</span>
-                  <span className="font-bold">{summary.breaking}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-2xl bg-indigo-500 px-4 py-3 text-white shadow-sm">
-                  <span className="font-medium">Community Updates</span>
-                  <span className="font-bold">{summary.updates}</span>
+
+                {/* Subscribe */}
+                <div className="glass-panel p-5 shadow-card">
+                  <p className="text-sm font-semibold text-text-primary">
+                    Stay Updated
+                  </p>
+                  <p className="mt-2 text-xs text-text-muted">
+                    Subscribe to get instant notifications for breaking news and
+                    alerts.
+                  </p>
+                  <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow-button hover:opacity-90 transition">
+                    <Newspaper className="h-4 w-4" />
+                    Subscribe To Alerts
+                  </button>
                 </div>
               </div>
             </div>
-
-            {/* Subscribe */}
-            <div className="glass-panel p-5 shadow-card">
-              <p className="text-sm font-semibold text-text-primary">Stay Updated</p>
-              <p className="mt-2 text-xs text-text-muted">
-                Subscribe to get instant notifications for breaking news and alerts.
-              </p>
-              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-tealGlow px-4 py-3 text-sm font-semibold text-night shadow-glow-button hover:opacity-90 transition">
-                <Newspaper className="h-4 w-4" />
-                Subscribe To Alerts
-              </button>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </CitizenShell>
   );
 }
-
