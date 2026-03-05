@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { Bell, CalendarDays, CheckCircle2, Share2 } from "lucide-react";
+import Link from "next/link";
 import { ResponderShell } from "../_components/ResponderShell";
 import { api } from "@/lib/api";
 
@@ -32,7 +33,6 @@ function severityBadge(severity: Severity) {
 
 export default function ResponderAlertsPage() {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<Severity | "All">("All");
   const [showAcknowledged, setShowAcknowledged] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -43,9 +43,19 @@ export default function ResponderAlertsPage() {
       try {
         // /responder/incidents returns incidents that wrap the citizen report
         const data = await api.get("/responder/incidents");
-        const incidents: any[] = data.incidents || [];
-        const mappedAlerts: AlertItem[] = incidents.map((inc: any) => {
-          const r = inc.report || inc; // handle both nested and flat shapes
+        const incidents: {
+          id: string;
+          status: string;
+          created_at?: string;
+          report?: {
+            title?: string;
+            description?: string;
+            severity?: string;
+            created_at?: string;
+          };
+        }[] = data.incidents || [];
+        const mappedAlerts: AlertItem[] = incidents.map((inc) => {
+          const r = inc.report || {}; // handle both nested and flat shapes
           const rawSeverity: string = r.severity || "Low";
           const capitalized = (rawSeverity.charAt(0).toUpperCase() +
             rawSeverity.slice(1).toLowerCase()) as Severity;
@@ -259,9 +269,12 @@ export default function ResponderAlertsPage() {
                   >
                     Confirm Response
                   </button>
-                  <button className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
+                  <Link
+                    href={`/responder/alerts/${a.id}`}
+                    className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm"
+                  >
                     Operational Details
-                  </button>
+                  </Link>
                   <button className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm inline-flex items-center gap-2">
                     <Share2 className="h-3.5 w-3.5" />
                     Broadcast

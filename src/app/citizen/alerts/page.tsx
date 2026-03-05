@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { Bell, CalendarDays, CheckCircle2, Share2 } from "lucide-react";
+import Link from "next/link";
 import { CitizenShell } from "../_components/CitizenShell";
 import { api } from "@/lib/api";
 
@@ -62,9 +63,16 @@ export default function AlertsPage() {
     try {
       // Fetch AI-generated alerts from the backend
       const data = await api.get("/alerts");
-      const aiAlerts: any[] = data.alerts || [];
-      
-      const mapped: AlertItem[] = aiAlerts.map((alert: any) => ({
+      const aiAlerts: {
+        id: string;
+        title: string;
+        message: string;
+        severity: string;
+        created_at: string;
+        acknowledged: boolean;
+      }[] = data.alerts || [];
+
+      const mapped: AlertItem[] = aiAlerts.map((alert) => ({
         id: alert.id,
         title: alert.title,
         message: alert.message,
@@ -233,9 +241,12 @@ export default function AlertsPage() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-3">
-                      <button className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm">
+                      <Link
+                        href={`/citizen/alerts/${a.id}`}
+                        className="rounded-xl border border-card-border bg-card-bg px-4 py-2 text-[11px] font-semibold text-text-primary hover:bg-card-border/20 transition shadow-sm"
+                      >
                         View Details
-                      </button>
+                      </Link>
                       <button
                         onClick={() => {
                           if (navigator.share) {
