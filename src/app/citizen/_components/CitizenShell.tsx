@@ -151,44 +151,41 @@ export function CitizenShell({
           </button>
         </div>
 
-        <Link
-          href="/citizen/profile"
-          onClick={() => setIsSidebarOpen(false)}
-          className={`flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 ${
-            pathname === "/citizen/profile" ? "bg-white/10 border-tealGlow/50" : "hover:bg-white/5 border-white/20"
-          }`}
-        >
-          <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30 bg-card-bg flex items-center justify-center">
-            {user?.avatar ? (
-              <Image
-                src={user.avatar}
-                alt="Avatar"
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <Users className="h-5 w-5 text-tealGlow/40" />
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-bold text-text-primary">{user?.name || "Citizen"}</p>
-            <p className="truncate text-[10px] text-text-muted">{user?.email || "Citizen Level 4"}</p>
-          </div>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/citizen/profile"
+            onClick={() => setIsSidebarOpen(false)}
+            className={`flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 flex-1 ${
+              pathname === "/citizen/profile" ? "bg-white/10 border-tealGlow/50" : "hover:bg-white/5 border-white/20"
+            }`}
+          >
+            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30 bg-card-bg flex items-center justify-center">
+              {user?.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Users className="h-5 w-5 text-tealGlow/40" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-text-primary">{user?.name || "Citizen"}</p>
+              <p className="truncate text-[10px] text-text-muted">{user?.email || "Citizen Level 4"}</p>
+            </div>
+          </Link>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 hover:bg-red-500/10 border-red-500/30 hover:border-red-500/50 w-full text-left group"
-        >
-          <div className="h-10 w-10 flex items-center justify-center rounded-full border-2 border-red-500/30 bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
-            <LogOut className="h-5 w-5 text-red-400" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-red-400">Logout</p>
-            <p className="text-[10px] text-red-400/60">Sign out of your account</p>
-          </div>
-        </button>
+          <button
+            onClick={handleLogout}
+            className="h-[66px] w-[66px] flex items-center justify-center rounded-2xl transition-colors border-2 hover:bg-red-500/10 border-red-500/30 hover:border-red-500/50 group"
+            title="Logout"
+          >
+            <LogOut className="h-5 w-5 text-red-400 group-hover:text-red-300 transition-colors" />
+          </button>
+        </div>
       </div>
     </div>
   );

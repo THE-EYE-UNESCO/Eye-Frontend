@@ -42,7 +42,17 @@ export default function MyReportsPage() {
 
   const fetchReports = async () => {
     try {
-      const data = await api.get("/reports");
+      // Get current user ID from localStorage
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        console.error("No user found in localStorage");
+        return;
+      }
+      const user = JSON.parse(userStr);
+      const userId = user.id;
+      
+      // Fetch user-specific reports
+      const data = await api.get(`/reports/user/${userId}`);
       setReports(data.reports);
     } catch (error) {
       console.error("Error fetching reports:", error);
