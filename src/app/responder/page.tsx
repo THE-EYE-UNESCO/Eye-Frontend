@@ -8,7 +8,6 @@ import {
   CheckCircle,
   Calendar,
   AlertOctagon,
-  ArrowRight,
   MapPin,
   ChevronRight,
   Phone,
@@ -17,24 +16,30 @@ import {
 import { api } from "@/lib/api";
 
 export default function ResponderDashboard() {
-  const [reports, setReports] = React.useState<any[]>([]);
+  const [incidents, setIncidents] = React.useState<any[]>([]);
+  const [metrics, setMetrics] = React.useState<{
+    newAlerts: number;
+    respondersOnline: number;
+    completedCases: number;
+  } | null>(null);
   const [loading, setLoading] = React.useState(true);
 
-  // Incidents returned by /responder/incidents wrap the citizen report:
-  // { id, status, responder_id, report: { id, title, description, severity, category, address, landmark, created_at } }
-
   React.useEffect(() => {
-    const fetchReports = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const data = await api.get("/responder/incidents");
-        setReports(data.incidents || []);
+        const [incidentsData, dashboardData] = await Promise.all([
+          api.get("/responder/incidents"),
+          api.get("/responder/dashboard"),
+        ]);
+        setIncidents(incidentsData.incidents || []);
+        setMetrics(dashboardData.dashboard?.metrics || null);
       } catch (error) {
-        console.error("Failed to fetch reports:", error);
+        console.error("Failed to fetch responder dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchReports();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -46,24 +51,20 @@ export default function ResponderDashboard() {
         {/* Stat Overview Cards */}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 xs:grid-cols-2 sm:grid-cols-3">
           <StatCard
-            title="Active Alerts"
-            value={reports
-              .filter((r) => r.severity === "CRITICAL" || r.severity === "HIGH")
-              .length.toString()}
+            title="New Alerts (24h)"
+            value={metrics?.newAlerts.toString() || "0"}
             icon={<Bell className="h-5 w-5 sm:h-6 sm:w-6" />}
             color="bg-[#FF5A5A]"
           />
           <StatCard
-            title="Pending Reports"
-            value={reports
-              .filter((r) => r.status === "PENDING")
-              .length.toString()}
+            title="Responders Online"
+            value={metrics?.respondersOnline.toString() || "0"}
             icon={<CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />}
             color="bg-[#41843D]"
           />
           <StatCard
-            title="Total Reports"
-            value={reports.length.toString()}
+            title="Total Assigned"
+            value={incidents.length.toString()}
             icon={<Calendar className="h-5 w-5 sm:h-6 sm:w-6" />}
             color="bg-[#1D7AFC]"
           />
@@ -79,7 +80,7 @@ export default function ResponderDashboard() {
                 <h2 className="text-lg font-semibold">Urgent Alert</h2>
                 <span className="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-[#FF5A5A]/10 text-xs font-bold text-[#FF5A5A]">
                   {
-                    reports.filter(
+                    incidents.filter(
                       (r: any) =>
                         r.report?.severity === "CRITICAL" ||
                         r.report?.severity === "HIGH",
@@ -90,8 +91,10 @@ export default function ResponderDashboard() {
 
               {(() => {
                 const urgent =
-                  reports.find((r: any) => r.report?.severity === "CRITICAL") ||
-                  reports.find((r: any) => r.report?.severity === "HIGH");
+                  incidents.find(
+                    (r: any) => r.report?.severity === "CRITICAL",
+                  ) ||
+                  incidents.find((r: any) => r.report?.severity === "HIGH");
                 if (!urgent)
                   return (
                     <div className="rounded-2xl border border-card-border bg-card-bg p-5 text-sm text-text-muted">
@@ -108,7 +111,7 @@ export default function ResponderDashboard() {
                         {urgent.report?.severity}
                       </span>
                     </div>
-                    <p className="mt-3 text-xs text-text-secondary leading-relaxed">
+                    <p className="mt-3 text-xs text-text-secondary leading-relaxed line-clamp-2">
                       {urgent.report?.description ||
                         "Assess and report immediate dangers."}
                     </p>
@@ -169,15 +172,15 @@ export default function ResponderDashboard() {
             <div className="space-y-4 sm:space-y-6">
               {loading ? (
                 <div className="p-12 text-center text-text-secondary">
-                  Loading reports...
+                  Loading incidents...
                 </div>
-              ) : reports.length === 0 ? (
+              ) : incidents.length === 0 ? (
                 <div className="p-12 text-center text-text-secondary">
-                  No citizen reports found.
+                  No assigned incidents found.
                 </div>
               ) : (
-                reports.map((report) => (
-                  <IncidentCard key={report.id} report={report} />
+                incidents.map((incident) => (
+                  <IncidentCard key={incident.id} incident={incident} />
                 ))
               )}
             </div>
@@ -246,7 +249,10 @@ function ActionItem({
   );
 }
 
-function IncidentCard({ report }: { report: any }) {
+function IncidentCard({ incident }: { incident: any }) {
+  const report = incident.report || {};
+  const incidentStatus: string = incident.status || "";
+
   const getSeverityColor = (severity: string) => {
     switch (severity?.toUpperCase()) {
       case "CRITICAL":
@@ -262,10 +268,12 @@ function IncidentCard({ report }: { report: any }) {
     }
   };
 
-  const getTimeAgo = (date: string) => {
-    const now = new Date();
+  const getTimeAgo = (date: string | Date | undefined) => {
+    if (!date) return "Unknown";
     const then = new Date(date);
-    const diff = Math.floor((now.getTime() - then.getTime()) / 60000);
+    if (isNaN(then.getTime())) return "Unknown";
+    const diff = Math.floor((Date.now() - then.getTime()) / 60000);
+    if (diff < 1) return "just now";
     if (diff < 60) return `${diff}m ago`;
     const hours = Math.floor(diff / 60);
     if (hours < 24) return `${hours}h ago`;
@@ -273,6 +281,31 @@ function IncidentCard({ report }: { report: any }) {
   };
 
   const isCritical = report.severity === "CRITICAL";
+
+  // Status workflow: ASSIGNED → ON_THE_WAY → ON_SITE → RESOLVED
+  const statusActions = [
+    { label: "On The Way", value: "ON_THE_WAY" },
+    { label: "On Site", value: "ON_SITE" },
+    { label: "Resolved", value: "RESOLVED" },
+  ];
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      const { api } = await import("@/lib/api");
+      await api.put(`/responder/incidents/${incident.id}/status`, {
+        status: newStatus,
+      });
+      // Reload the page to see updated status
+      window.location.reload();
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to update status";
+      alert(msg);
+    }
+  };
+
+  const statusOrder = ["ASSIGNED", "ON_THE_WAY", "ON_SITE", "RESOLVED"];
+  const currentIdx = statusOrder.indexOf(incidentStatus);
 
   return (
     <div className="group relative overflow-hidden rounded-[32px] border border-card-border bg-[#0A0F16] p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-tealGlow/30 transition-all">
@@ -292,26 +325,22 @@ function IncidentCard({ report }: { report: any }) {
             <span className="rounded-full bg-tealGlow/10 border border-tealGlow/20 px-3 py-1 text-[8px] sm:text-[9px] font-bold text-tealGlow uppercase tracking-wider">
               {report.category || "GENERAL"}
             </span>
-            {report.status === "VERIFIED" && (
-              <span className="rounded-full bg-[#2D1B1B] px-3 py-1 text-[8px] sm:text-[9px] font-bold text-[#FF4D4D] uppercase tracking-wider border border-[#FF3B3B]/10">
-                Verified
-              </span>
-            )}
+            <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[8px] sm:text-[9px] font-bold text-text-muted uppercase tracking-wider">
+              {incidentStatus.replace("_", " ")}
+            </span>
           </div>
 
           <h3 className="text-lg sm:text-xl font-bold text-text-primary group-hover:underline decoration-2 underline-offset-4 cursor-pointer">
-            {report.title}
+            {report.title || "Incident"}
           </h3>
           <p className="text-xs sm:text-[13px] leading-relaxed text-[#94A3B8] line-clamp-2">
-            {report.description}
+            {report.description || "No description available."}
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 sm:gap-x-8 gap-y-3 text-[10px] sm:text-[11px] text-[#64748B] font-bold">
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 sm:gap-x-8 gap-y-3 text-[10px] sm:text-[11px] text-[#64748B] font-bold">
             <div className="flex items-center gap-2">
               <MapPin className="h-3 w-3 text-tealGlow" />
-              <span>
-                {report.landmark || report.address || "Unknown Location"}
-              </span>
+              <span>{report.landmark || report.address || "Location N/A"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-3 w-3" />
@@ -319,11 +348,47 @@ function IncidentCard({ report }: { report: any }) {
             </div>
           </div>
         </div>
-
-        <button className="rounded-xl bg-[#3B82F6] px-6 py-2.5 text-[11px] font-black text-white shadow-lg hover:bg-[#2563EB] transition-all self-start sm:self-center">
-          Respond
-        </button>
       </div>
+
+      {/* Quick Actions */}
+      {incidentStatus !== "RESOLVED" && (
+        <div className="mt-5 pt-4 border-t border-white/5">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted mb-3">
+            Quick Actions:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {statusActions.map((action) => {
+              const actionIdx = statusOrder.indexOf(action.value);
+              const isCurrent = action.value === incidentStatus;
+              const isDone = actionIdx < currentIdx;
+              const isNext = actionIdx === currentIdx + 1;
+              const isResolve = action.value === "RESOLVED";
+
+              if (isDone) return null; // hide past statuses
+
+              return (
+                <button
+                  key={action.value}
+                  onClick={() => !isCurrent && handleStatusChange(action.value)}
+                  disabled={!isNext && !isResolve}
+                  className={`rounded-xl px-4 py-1.5 text-[10px] font-bold transition-all
+                    ${
+                      isCurrent
+                        ? "bg-tealGlow/20 text-tealGlow border border-tealGlow/30 cursor-default"
+                        : isNext || isResolve
+                          ? isResolve
+                            ? "bg-[#41843D] text-white hover:opacity-90"
+                            : "bg-white/10 text-text-primary hover:bg-white/20 border border-white/10"
+                          : "opacity-30 cursor-not-allowed bg-white/5 text-text-muted"
+                    }`}
+                >
+                  {isCurrent ? `● ${action.label}` : action.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
