@@ -14,11 +14,15 @@ const safeParseUser = () => {
 
 
 export const api = {
-  async post(endpoint: string, data: any) {
+  async post(endpoint: string, data: any, options: any = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const headers: Record<string, string> = { ...options.headers };
+
+    if (data instanceof FormData) {
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+    }
 
     const user = safeParseUser();
 
@@ -34,7 +38,7 @@ export const api = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     });
 
     let result;
@@ -47,7 +51,6 @@ export const api = {
     }
 
     if (!response.ok) {
-
       throw new Error(result.message || 'Something went wrong');
     }
 
@@ -126,11 +129,15 @@ export const api = {
     return result;
   },
 
-  async put(endpoint: string, data: any) {
+  async put(endpoint: string, data: any, options: any = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const headers: Record<string, string> = { ...options.headers };
+
+    if (data instanceof FormData) {
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+    }
 
     const user = safeParseUser();
 
@@ -146,7 +153,7 @@ export const api = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     });
 
     let result;
@@ -165,11 +172,15 @@ export const api = {
     return result;
   },
 
-  async patch(endpoint: string, data: any) {
+  async patch(endpoint: string, data: any, options: any = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const headers: Record<string, string> = { ...options.headers };
+
+    if (data instanceof FormData) {
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+    }
 
     const user = safeParseUser();
 
@@ -185,7 +196,7 @@ export const api = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     });
 
     let result;

@@ -60,18 +60,18 @@ export default function AlertsPage() {
 
   const fetchAlerts = async () => {
     try {
-      // Use citizen's own reports as alerts — high/critical pending ones show as active alerts
-      const data = await api.get("/reports");
-      const reports: any[] = data.reports || [];
+      // Fetch AI-generated alerts from the backend
+      const data = await api.get("/alerts");
+      const aiAlerts: any[] = data.alerts || [];
       
-      const mapped: AlertItem[] = reports.map((r: any) => ({
-        id: r.id,
-        title: r.title,
-        message: r.description,
-        severity: mapSeverity(r.severity),
-        createdAgo: getTimeAgo(r.created_at),
+      const mapped: AlertItem[] = aiAlerts.map((alert: any) => ({
+        id: alert.id,
+        title: alert.title,
+        message: alert.message,
+        severity: mapSeverity(alert.severity),
+        createdAgo: getTimeAgo(alert.created_at),
         delivery: ["App", "SMS"] as Array<"App" | "SMS">,
-        acknowledged: r.status === "RESOLVED" || r.status === "REJECTED",
+        acknowledged: alert.acknowledged,
       }));
       setAlerts(mapped);
     } catch (error) {
