@@ -11,9 +11,10 @@ import {
   Plus,
   ArrowUp,
   Shield,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Image from "next/image";
 import ThreeBackground from "@/components/ThreeBackground";
@@ -28,7 +29,15 @@ export function ResponderShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsSidebarOpen(false);
+    router.push("/login");
+  };
 
   const nav = [
     {
@@ -120,6 +129,19 @@ export function ResponderShell({
             <p className="truncate text-[10px] text-tealGlow font-bold">ID: RESP-429</p>
           </div>
         </div>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 hover:bg-red-500/10 border-red-500/30 hover:border-red-500/50 w-full text-left group"
+        >
+          <div className="h-10 w-10 flex items-center justify-center rounded-full border-2 border-red-500/30 bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
+            <LogOut className="h-5 w-5 text-red-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold text-red-400">Logout</p>
+            <p className="text-[10px] text-red-400/60">Sign out of your account</p>
+          </div>
+        </button>
       </div>
     </div>
   );
