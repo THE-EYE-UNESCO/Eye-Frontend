@@ -61,6 +61,27 @@ export default function CrisisMapPage() {
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(
     null,
   );
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [locationLabel, setLocationLabel] = useState("Detecting location...");
+
+  // Get user's current location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+          setLocationLabel("Your location • Current location");
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setLocationLabel("Location unavailable");
+        }
+      );
+    } else {
+      setLocationLabel("Geolocation not supported");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -112,9 +133,9 @@ export default function CrisisMapPage() {
     }
   };
 
-  // Default map center — Kigali, Rwanda
-  const mapCenter: [number, number] =
-    incidents.length > 0 ? incidents[0].coords : [-1.95, 30.06];
+  // Default map center — use user location if available, otherwise Kigali, Rwanda
+  const mapCenter: [number, number] = userLocation || 
+    (incidents.length > 0 ? incidents[0].coords : [-1.95, 30.06]);
 
   return (
     <CitizenShell
@@ -166,7 +187,8 @@ export default function CrisisMapPage() {
                     incidents={incidents}
                     selectedIncidentId={selectedIncidentId}
                     onIncidentClick={setSelectedIncidentId}
-                    locationLabel="Your location • Current location"
+                    locationLabel={locationLabel}
+                    userLocation={userLocation}
                   />
                 )}
               </div>

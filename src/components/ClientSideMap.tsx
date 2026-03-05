@@ -19,6 +19,7 @@ interface ClientSideMapProps {
   selectedIncidentId: string | null;
   onIncidentClick: (id: string) => void;
   locationLabel?: string;
+  userLocation?: [number, number] | null;
 }
 
 export default function ClientSideMap({
@@ -27,11 +28,13 @@ export default function ClientSideMap({
   incidents,
   selectedIncidentId,
   onIncidentClick,
-  locationLabel
+  locationLabel,
+  userLocation
 }: ClientSideMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<{ [key: string]: L.CircleMarker }>({});
+  const userMarkerRef = useRef<L.CircleMarker | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   // Initialize Map
@@ -122,6 +125,43 @@ export default function ClientSideMap({
     });
 
   }, [incidents, selectedIncidentId, isReady]);
+
+  // Update user location marker
+  useEffect(() => {
+    if (!mapInstanceRef.current || !isReady || !userLocation) return;
+
+    const map = mapInstanceRef.current;
+
+    // Remove old user marker if exists
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+    }
+
+    // Create user location marker
+    const userMarker = L.circleMarker(userLocation, {
+      radius: 8,
+      fillColor: "#14b8a6",
+      color: "#ffffff",
+      weight: 3,
+      fillOpacity: 1,
+    }).addTo(map);
+
+    userMarker.bindTooltip("Your Location", {
+      direction: 'top',
+      offset: [0, -8],
+      opacity: 0.9,
+      permanent: false
+    });
+
+    userMarkerRef.current = userMarker;
+
+    return () => {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+        userMarkerRef.current = null;
+      }
+    };
+  }, [userLocation, isReady]);
 
   // Handle center/zoom updates if needed
   useEffect(() => {
