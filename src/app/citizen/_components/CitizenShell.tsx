@@ -18,95 +18,70 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import ThreeBackground from "@/components/ThreeBackground";
 
-export function CitizenShell({
-  title,
-  subtitle,
-  children,
+const NAV_ITEMS = [
+  {
+    label: "Dashboard",
+    href: "/citizen",
+    icon: <LayoutDashboard className="h-4 w-4" />,
+  },
+  {
+    label: "Crisis Map",
+    href: "/citizen/crisis-map",
+    icon: <Map className="h-4 w-4" />,
+  },
+  {
+    label: "Alerts",
+    href: "/citizen/alerts",
+    icon: <Bell className="h-4 w-4" />,
+  },
+  {
+    label: "Report Incident",
+    href: "/citizen/report",
+    icon: <AlertTriangle className="h-4 w-4" />,
+  },
+  {
+    label: "My Reports",
+    href: "/citizen/my-reports",
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    label: "News",
+    href: "/citizen/news",
+    icon: <Newspaper className="h-4 w-4" />,
+  },
+  {
+    label: "Community",
+    href: "/citizen/community",
+    icon: <Users className="h-4 w-4" />,
+  },
+] as const;
+
+function readStoredUser() {
+  if (typeof window === "undefined") return null;
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser || storedUser === "undefined") return null;
+  try {
+    return JSON.parse(storedUser) as { name: string; email: string; avatar?: string };
+  } catch (error) {
+    console.error("Error parsing user data", error);
+    return null;
+  }
+}
+
+function CitizenSidebarContent({
+  pathname,
+  userName,
+  onNavigate,
+  onLogout,
 }: {
-  title?: React.ReactNode;
-  subtitle?: React.ReactNode;
-  children: React.ReactNode;
+  pathname: string;
+  userName: string;
+  onNavigate: () => void;
+  onLogout: () => void;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsSidebarOpen(false);
-    router.push("/login");
-  };
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Error parsing user data", e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (e) {
-          console.error("Error parsing user data", e);
-        }
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const nav = [
-    {
-      label: "Dashboard",
-      href: "/citizen",
-      icon: <LayoutDashboard className="h-4 w-4" />,
-    },
-    {
-      label: "Crisis Map",
-      href: "/citizen/crisis-map",
-      icon: <Map className="h-4 w-4" />,
-    },
-    {
-      label: "Alerts",
-      href: "/citizen/alerts",
-      icon: <Bell className="h-4 w-4" />,
-    },
-    {
-      label: "Report Incident",
-      href: "/citizen/report",
-      icon: <AlertTriangle className="h-4 w-4" />,
-    },
-    {
-      label: "My Reports",
-      href: "/citizen/my-reports",
-      icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      label: "News",
-      href: "/citizen/news",
-      icon: <Newspaper className="h-4 w-4" />,
-    },
-    {
-      label: "Community",
-      href: "/citizen/community",
-      icon: <Users className="h-4 w-4" />,
-    },
-  ];
-
-  const SidebarContent = () => (
+  return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-8">
         <div className="flex h-10 w-10 items-center justify-center rounded-md border border-tealGlow/30 bg-tealGlow/10 text-tealGlow">
@@ -123,11 +98,11 @@ export function CitizenShell({
       </div>
 
       <nav className="flex-1 space-y-2 px-4">
-        {nav.map((item) => (
+        {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={onNavigate}
             className={`group flex items-center justify-between rounded-md border px-4 py-3 transition-colors duration-200 ${
               pathname === item.href
                 ? "border-tealGlow/30 bg-tealGlow/10 text-tealGlow font-semibold"
@@ -148,46 +123,21 @@ export function CitizenShell({
       </nav>
 
       <div className="mt-auto space-y-4 p-4">
-        <div className="rounded-md border border-white/10 bg-white/5 p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
-            Account
-          </p>
-          <div className="mt-3 flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-md border border-white/10 bg-card-bg flex items-center justify-center">
-              {user?.avatar ? (
-                <Image
-                  src={user.avatar}
-                  alt="Avatar"
-                  width={40}
-                  height={40}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Users className="h-5 w-5 text-tealGlow/70" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-text-primary">{user?.name || "Citizen"}</p>
-              <p className="truncate text-xs text-text-muted">{user?.email || "Signed in user"}</p>
-            </div>
-          </div>
-        </div>
-
         <div className="flex items-center gap-2">
           <Link
             href="/citizen/profile"
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={onNavigate}
             className={`flex items-center gap-3 rounded-md border px-3 py-3 transition-colors flex-1 ${
               pathname === "/citizen/profile" ? "border-tealGlow/30 bg-tealGlow/10" : "border-white/10 hover:bg-white/5"
             }`}
           >
             <Users className="h-4 w-4 text-tealGlow" />
-            <span className="text-sm font-medium text-text-primary">Profile</span>
+            <span className="text-sm font-medium text-text-primary">{userName}</span>
           </Link>
 
           <button
-            onClick={handleLogout}
-            className="h-[56px] w-[56px] flex items-center justify-center rounded-md border border-red-500/30 transition-colors hover:bg-red-500/10 hover:border-red-500/50 group"
+            onClick={onLogout}
+            className="px-3 py-3 flex items-center justify-center rounded-md border border-red-500/30 transition-colors hover:bg-red-500/10 hover:border-red-500/50 group"
             title="Logout"
           >
             <LogOut className="h-5 w-5 text-red-400 group-hover:text-red-300 transition-colors" />
@@ -196,6 +146,42 @@ export function CitizenShell({
       </div>
     </div>
   );
+}
+
+export function CitizenShell({
+  title,
+  subtitle,
+  children,
+}: {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; avatar?: string } | null>(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsSidebarOpen(false);
+    router.push("/login");
+  };
+
+  useEffect(() => {
+    const syncUser = () => setUser(readStoredUser());
+    queueMicrotask(syncUser);
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(readStoredUser());
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   return (
     <main className="min-h-screen bg-bg-primary text-text-primary relative overflow-x-hidden selection:bg-tealGlow selection:text-night">
@@ -227,7 +213,7 @@ export function CitizenShell({
 
       <div className="flex min-h-screen lg:pt-0 pt-20">
         {/* Mobile Navigation Drawer */}
-        <div className={`fixed inset-0 z-[100] lg:hidden transition-all duration-500 ease-in-out ${isSidebarOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
+          <div className={`fixed inset-0 z-[100] lg:hidden transition-all duration-500 ease-in-out ${isSidebarOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
           <div 
             className={`absolute inset-0 bg-night/80 backdrop-blur-md transition-opacity duration-500 ${isSidebarOpen ? "opacity-100" : "opacity-0"}`}
             onClick={() => setIsSidebarOpen(false)}
@@ -239,13 +225,23 @@ export function CitizenShell({
             >
               <X className="h-5 w-5" />
             </button>
-            <SidebarContent />
+            <CitizenSidebarContent
+              pathname={pathname}
+              userName={user?.name || "Citizen profile"}
+              onNavigate={() => setIsSidebarOpen(false)}
+              onLogout={handleLogout}
+            />
           </aside>
         </div>
 
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex fixed top-0 left-0 h-screen w-72 flex-col bg-bg-primary border-r border-white/10 z-50">
-          <SidebarContent />
+          <CitizenSidebarContent
+            pathname={pathname}
+            userName={user?.name || "Citizen profile"}
+            onNavigate={() => setIsSidebarOpen(false)}
+            onLogout={handleLogout}
+          />
         </aside>
 
         {/* Main Content Area */}
