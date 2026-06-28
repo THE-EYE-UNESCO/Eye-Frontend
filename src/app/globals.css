@@ -117,22 +117,6 @@ body {
   @apply text-white;
 }
 
-.citizen-main {
-  font-size: 0.9rem;
-}
-
-.citizen-sidebar {
-  font-size: 0.85rem;
-}
-
-.sidebar-upgrade {
-  font-size: 0.85rem;
-}
-
-.sidebar-profile .profile-email {
-  color: #b6c2d4;
-}
-
 h1, h2, h3 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -154,7 +138,7 @@ p, .subheading {
 
 
 .glass-panel {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl;
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-md;
 }
 
 .section-grid {
@@ -166,7 +150,7 @@ p, .subheading {
 }
 
 .tag-chip {
-  @apply px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-wide text-slateSoft;
+  @apply px-3 py-1 rounded-md border border-white/10 bg-white/5 text-[10px] uppercase tracking-wide text-slateSoft;
 }
 
 .gradient-border {

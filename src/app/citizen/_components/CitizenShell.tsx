@@ -109,12 +109,17 @@ export function CitizenShell({
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-tealGlow text-night">
+        <div className="flex h-10 w-10 items-center justify-center rounded-md border border-tealGlow/30 bg-tealGlow/10 text-tealGlow">
           <Eye className="h-5 w-5" />
         </div>
-        <span className="text-xl font-bold tracking-widest text-tealGlow uppercase">
-          THE EYE
-        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-text-muted">
+            Citizen Portal
+          </p>
+          <span className="block truncate text-lg font-semibold text-text-primary">
+            THE EYE
+          </span>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-2 px-4">
@@ -123,43 +128,32 @@ export function CitizenShell({
             key={item.href}
             href={item.href}
             onClick={() => setIsSidebarOpen(false)}
-            className={`group flex items-center justify-between rounded-2xl px-4 py-3.5 transition-all duration-300 ${
+            className={`group flex items-center justify-between rounded-md border px-4 py-3 transition-colors duration-200 ${
               pathname === item.href
-                ? "bg-tealGlow text-night font-bold shadow-glow-teal"
-                : "text-text-secondary hover:bg-white/5"
+                ? "border-tealGlow/30 bg-tealGlow/10 text-tealGlow font-semibold"
+                : "border-transparent text-text-secondary hover:border-white/10 hover:bg-white/5 hover:text-text-primary"
             }`}
           >
             <div className="flex items-center gap-3">
               <span className={`flex h-6 w-6 items-center justify-center transition-colors ${
-                pathname === item.href ? "text-night" : "text-tealGlow/60 group-hover:text-tealGlow"
+                pathname === item.href ? "text-tealGlow" : "text-text-muted group-hover:text-tealGlow"
               }`}>
                 {item.icon}
               </span>
               <span className="text-sm">{item.label}</span>
             </div>
-            {pathname === item.href && <ArrowUp className="h-3 w-3 rotate-45" />}
+            {pathname === item.href && <ArrowUp className="h-3 w-3 rotate-45 text-tealGlow" />}
           </Link>
         ))}
       </nav>
 
-      <div className="mt-auto p-4 space-y-4">
-        <div className="rounded-[28px] bg-white/5 border-2 border-tealGlow/30 p-5 backdrop-blur-md">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-tealGlow mb-1">PRO Membership</p>
-          <p className="text-sm font-bold text-text-primary mb-3">Early Warning AI</p>
-          <button className="w-full rounded-xl bg-white/10 py-2.5 text-xs font-bold text-text-primary hover:bg-white/20 transition-colors border-2 border-tealGlow/40">
-            Upgrade
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href="/citizen/profile"
-            onClick={() => setIsSidebarOpen(false)}
-            className={`flex items-center gap-3 rounded-2xl p-3 transition-colors border-2 flex-1 ${
-              pathname === "/citizen/profile" ? "bg-white/10 border-tealGlow/50" : "hover:bg-white/5 border-white/20"
-            }`}
-          >
-            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-tealGlow/30 bg-card-bg flex items-center justify-center">
+      <div className="mt-auto space-y-4 p-4">
+        <div className="rounded-md border border-white/10 bg-white/5 p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+            Account
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-10 w-10 overflow-hidden rounded-md border border-white/10 bg-card-bg flex items-center justify-center">
               {user?.avatar ? (
                 <Image
                   src={user.avatar}
@@ -169,18 +163,31 @@ export function CitizenShell({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <Users className="h-5 w-5 text-tealGlow/40" />
+                <Users className="h-5 w-5 text-tealGlow/70" />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-text-primary">{user?.name || "Citizen"}</p>
-              <p className="truncate text-[10px] text-text-muted">{user?.email || "Citizen Level 4"}</p>
+              <p className="truncate text-sm font-semibold text-text-primary">{user?.name || "Citizen"}</p>
+              <p className="truncate text-xs text-text-muted">{user?.email || "Signed in user"}</p>
             </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/citizen/profile"
+            onClick={() => setIsSidebarOpen(false)}
+            className={`flex items-center gap-3 rounded-md border px-3 py-3 transition-colors flex-1 ${
+              pathname === "/citizen/profile" ? "border-tealGlow/30 bg-tealGlow/10" : "border-white/10 hover:bg-white/5"
+            }`}
+          >
+            <Users className="h-4 w-4 text-tealGlow" />
+            <span className="text-sm font-medium text-text-primary">Profile</span>
           </Link>
 
           <button
             onClick={handleLogout}
-            className="h-[66px] w-[66px] flex items-center justify-center rounded-2xl transition-colors border-2 hover:bg-red-500/10 border-red-500/30 hover:border-red-500/50 group"
+            className="h-[56px] w-[56px] flex items-center justify-center rounded-md border border-red-500/30 transition-colors hover:bg-red-500/10 hover:border-red-500/50 group"
             title="Logout"
           >
             <LogOut className="h-5 w-5 text-red-400 group-hover:text-red-300 transition-colors" />
@@ -197,21 +204,21 @@ export function CitizenShell({
       {/* Mobile Top Bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-transparent backdrop-blur-xl border-b border-card-border z-[60] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-tealGlow text-night">
+          <div className="h-9 w-9 flex items-center justify-center rounded-md border border-tealGlow/30 bg-tealGlow/10 text-tealGlow">
             <Eye className="h-5 w-5" />
           </div>
-          <span className="text-lg font-bold tracking-widest text-tealGlow">THE EYE</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.24em] text-text-primary">The Eye</span>
         </div>
         
         <div className="flex items-center gap-3">
           <Link href="/citizen/report">
-            <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-tealGlow text-night shadow-glow-teal active:scale-90">
+            <button className="h-10 w-10 flex items-center justify-center rounded-md bg-tealGlow text-night shadow-glow-teal active:scale-90">
               <Plus className="h-6 w-6" />
             </button>
           </Link>
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-text-primary active:scale-90"
+            className="h-10 w-10 flex items-center justify-center rounded-md bg-white/5 border border-white/10 text-text-primary active:scale-90"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -227,7 +234,7 @@ export function CitizenShell({
           />
           <aside className={`absolute left-0 top-0 h-full w-[85%] max-w-sm bg-bg-primary border-r border-white/10 transition-transform duration-500 ease-out-expo ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
             <button 
-              className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-text-primary"
+              className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-md bg-white/5 border border-white/10 text-text-primary"
               onClick={() => setIsSidebarOpen(false)}
             >
               <X className="h-5 w-5" />
